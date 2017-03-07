@@ -1,0 +1,657 @@
+<!doctype html>
+<html class="theme-next use-motion theme-next-mist">
+<head>
+    
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.4"/>
+
+
+    <meta name="description" content="kissss" />
+
+
+
+  <meta name="keywords" content="javascript," />
+
+
+
+
+
+  <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.4" />
+
+
+<meta name="description" content="Node.js异步本文以一个简单的文件读写为例，讲解了异步的不同写法，包括 普通的 callback、ES2016中的Promise和Generator、 Node 用于解决回调的co 模块、ES2017中的async/await。适合初步接触 Node.js以及少量 ES6语法的同学阅读。
+范例以一个范例做为例，我们要实现的功能如下：
+
+读取 a.md 文件，得到内容
+把内容转换成 HTML 字">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Node.js异步">
+<meta property="og:url" content="http://kissss.com/2017/02/15/Node.js异步/index.html">
+<meta property="og:site_name" content="kissss">
+<meta property="og:description" content="Node.js异步本文以一个简单的文件读写为例，讲解了异步的不同写法，包括 普通的 callback、ES2016中的Promise和Generator、 Node 用于解决回调的co 模块、ES2017中的async/await。适合初步接触 Node.js以及少量 ES6语法的同学阅读。
+范例以一个范例做为例，我们要实现的功能如下：
+
+读取 a.md 文件，得到内容
+把内容转换成 HTML 字">
+<meta property="og:updated_time" content="2017-03-07T14:46:36.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Node.js异步">
+<meta name="twitter:description" content="Node.js异步本文以一个简单的文件读写为例，讲解了异步的不同写法，包括 普通的 callback、ES2016中的Promise和Generator、 Node 用于解决回调的co 模块、ES2017中的async/await。适合初步接触 Node.js以及少量 ES6语法的同学阅读。
+范例以一个范例做为例，我们要实现的功能如下：
+
+读取 a.md 文件，得到内容
+把内容转换成 HTML 字">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post'
+  };
+</script>
+
+    <title> Node.js异步 // kissss </title>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+<!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?e4ba34f9a1864b1c468f14f335f6123e";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+<div class="container one-column page-post-detail">
+    <div class="headband"></div>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><h1 class="site-meta">
+  <span class="logo-line-before"><i></i></span>
+  <a href="/" class="brand" rel="start">
+      <span class="logo">
+        <i class="icon-logo"></i>
+      </span>
+      <span class="site-title">kissss</span>
+  </a>
+  <span class="logo-line-after"><i></i></span>
+</h1>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon icon-home"></i> <br />
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            <i class="menu-item-icon icon-categories"></i> <br />
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            <i class="menu-item-icon icon-archives"></i> <br />
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            <i class="menu-item-icon icon-tags"></i> <br />
+            标签
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+        </div>
+    </header>
+
+    <main id="main" class="main">
+        <div class="main-inner">
+            <div id="content" class="content">
+                
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              Node.js异步
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2017-02-15T16:56:24+08:00" content="2017-02-15">
+            2017-02-15
+          </time>
+        </span>
+
+        
+          <span class="post-category" >
+            &nbsp; | &nbsp; 分类于
+            
+              <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a href="/categories/javascript/" itemprop="url" rel="index"><span itemprop="name">javascript</span></a></span>
+
+              
+              
+
+            
+          </span>
+        
+
+        
+          
+            <span class="post-comments-count">
+              &nbsp; | &nbsp;
+              <a href="/2017/02/15/Node.js异步/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2017/02/15/Node.js异步/" itemprop="commentsCount"></span>
+              </a>
+            </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><h1 id="Node-js异步"><a href="#Node-js异步" class="headerlink" title="Node.js异步"></a>Node.js异步</h1><p>本文以一个简单的文件读写为例，讲解了异步的不同写法，包括 普通的 callback、ES2016中的Promise和Generator、 Node 用于解决回调的co 模块、ES2017中的async/await。适合初步接触 Node.js以及少量 ES6语法的同学阅读。</p>
+<h3 id="范例"><a href="#范例" class="headerlink" title="范例"></a>范例</h3><p>以一个范例做为例，我们要实现的功能如下：</p>
+<ul>
+<li>读取 a.md 文件，得到内容</li>
+<li>把内容转换成 HTML 字符串</li>
+<li>把HTML 字符串写入 b.html</li>
+</ul>
+<h3 id="callback回调地狱"><a href="#callback回调地狱" class="headerlink" title="callback回调地狱"></a>callback回调地狱</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>)</div><div class="line"><span class="keyword">var</span> markdown = <span class="built_in">require</span>( <span class="string">"markdown"</span> ).markdown</div><div class="line">fs.readFile(<span class="string">'a.md'</span>,<span class="string">'utf-8'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">err, str</span>)</span>&#123;</div><div class="line">  <span class="keyword">if</span>(err)&#123;</div><div class="line">    <span class="keyword">return</span> <span class="built_in">console</span>.log(err)</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">var</span> html = markdown.toHTML(str)</div><div class="line">  fs.writeFile(<span class="string">'b.html'</span>, html, <span class="function"><span class="keyword">function</span>(<span class="params">err</span>)</span>&#123;</div><div class="line">    <span class="keyword">if</span>(err)&#123;</div><div class="line">      <span class="keyword">return</span> <span class="built_in">console</span>.log(err)</div><div class="line">    &#125;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'write success'</span>)</div><div class="line">  &#125;)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<p>既然在 Node 环境下执行，那我们就尽量多使用 ES6的语法，比如<code>let</code>、<code>const</code>、<code>箭头函数</code>，上述代码改写如下</p>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">const fs = <span class="built_in">require</span>(<span class="string">'fs'</span>)</div><div class="line">const markdown = <span class="built_in">require</span>( <span class="string">"markdown"</span> ).markdown</div><div class="line">fs.readFile(<span class="string">'a.md'</span>,<span class="string">'utf-8'</span>, <span class="function"><span class="params">(err, str)</span>=&gt;</span>&#123;</div><div class="line">  <span class="keyword">if</span>(err)&#123;</div><div class="line">    <span class="keyword">return</span> <span class="built_in">console</span>.log(err)</div><div class="line">  &#125;</div><div class="line">  let html = markdown.toHTML(str)</div><div class="line">  </div><div class="line">  fs.writeFile(<span class="string">'b.html'</span>, html, <span class="function"><span class="params">(err)</span>=&gt;</span>&#123;</div><div class="line">    <span class="keyword">if</span>(err)&#123;</div><div class="line">      <span class="keyword">return</span> <span class="built_in">console</span>.log(err)</div><div class="line">    &#125;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'write success'</span>)</div><div class="line">  &#125;)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<p>看起来还不错哦，那是因为我们的回调只有两层，如果是七层、十层呢？这不是开玩笑。</p>
+<h3 id="Promise-处理回调"><a href="#Promise-处理回调" class="headerlink" title="Promise 处理回调"></a>Promise 处理回调</h3><p>关于 Promise 规范大家可以参考阮一峰老师的<a href="ECMAScript 6入门">教程</a>,这里不作赘述。</p>
+<p>这里我们把上述代码改写为 Promise 规范的调用方式，其中文件的读写需要进行包装，调用后返回 Promise 对象</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>)</div><div class="line"><span class="keyword">const</span> markdown = <span class="built_in">require</span>( <span class="string">"markdown"</span> ).markdown</div><div class="line"></div><div class="line">readFile(<span class="string">"a.md"</span>)</div><div class="line">  .then(<span class="function">(<span class="params">mdStr</span>)=&gt;</span>&#123;</div><div class="line">    <span class="keyword">return</span> markdown.toHTML(mdStr)  <span class="comment">//返回的结果作为下个回调的参数</span></div><div class="line">  &#125;).then(<span class="function"><span class="params">html</span>=&gt;</span>&#123;</div><div class="line">    writeFile(<span class="string">'b.html'</span>, html)</div><div class="line">  &#125;).catch(<span class="function">(<span class="params">e</span>)=&gt;</span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(e)</div><div class="line">  &#125;);</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">readFile</span>(<span class="params">url</span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> promise = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>)=&gt;</span>&#123;</div><div class="line">    fs.readFile(url,<span class="string">'utf-8'</span>, (err, str)=&gt;&#123;</div><div class="line">      <span class="keyword">if</span>(err)&#123;</div><div class="line">        reject(<span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'readFile error'</span>))</div><div class="line">      &#125;<span class="keyword">else</span>&#123;</div><div class="line">        resolve(str)</div><div class="line">      &#125;</div><div class="line">    &#125;)</div><div class="line">  &#125;)</div><div class="line">  <span class="keyword">return</span> promise</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">writeFile</span>(<span class="params">url, data</span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> promise = <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>)=&gt;</span>&#123;</div><div class="line">    fs.writeFile(url, data, (err, str)=&gt;&#123;</div><div class="line">      <span class="keyword">if</span>(err)&#123;</div><div class="line">        reject(<span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'writeFile error'</span>))</div><div class="line">      &#125;<span class="keyword">else</span>&#123;</div><div class="line">        resolve()</div><div class="line">      &#125;</div><div class="line">    &#125;)</div><div class="line">  &#125;)</div><div class="line">  <span class="keyword">return</span> promise</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上述代码把 callback 的嵌套执行改为 then 的串联执行，看起来舒服了一些。代码中我们对文件的读写函数进行了 Promise 化包装，其实可以使用一些现成的模块来做这个事情，继续改写代码</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> markdown = <span class="built_in">require</span>(<span class="string">'markdown'</span>).markdown</div><div class="line"><span class="keyword">const</span> fsp = <span class="built_in">require</span>(<span class="string">'fs-promise'</span>)   <span class="comment">//用于把 fs 变为 promise 化，内部处理逻辑和上面的例子类似</span></div><div class="line"><span class="keyword">let</span> onerror = <span class="function"><span class="params">err</span>=&gt;</span>&#123;</div><div class="line">  <span class="built_in">console</span>.error(<span class="string">'something wrong...'</span>)</div><div class="line">&#125;</div><div class="line"></div><div class="line">fsp.readFile(<span class="string">'a.md'</span>, <span class="string">'utf-8'</span>)</div><div class="line">  .then(<span class="function">(<span class="params">mdStr</span>)=&gt;</span>&#123;</div><div class="line">    <span class="keyword">return</span> markdown.toHTML(mdStr)  <span class="comment">//返回的结果作为下个回调的参数</span></div><div class="line">  &#125;).then(<span class="function"><span class="params">html</span>=&gt;</span>&#123;</div><div class="line">    fsp.writeFile(<span class="string">'b.html'</span>, html)</div><div class="line">  &#125;).catch(onerror);</div></pre></td></tr></table></figure>
+<p>代码一下子少了很多，结构清晰，但一堆的 then 看着还是碍眼…</p>
+<h3 id="Generator"><a href="#Generator" class="headerlink" title="Generator"></a>Generator</h3><p>Generator 函数是 ES6 提供的一种异步编程解决方案，也是刚刚接触的同学难以理解的点之一，在看下面的代码之前可以参考阮老师的<a href="ECMAScript 6入门">教程</a>， 当然这里也会先用一些简单的范例做引导便于大家去理解</p>
+<p>先看一个范例:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params">a,b</span>)</span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'fn..'</span>)</div><div class="line">  <span class="keyword">return</span> a + b</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span>* <span class="title">gen</span>(<span class="params">x</span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(x)</div><div class="line">  <span class="keyword">let</span> y = <span class="keyword">yield</span> fn(x,<span class="number">100</span>) + <span class="number">3</span></div><div class="line">  <span class="built_in">console</span>.log(y)</div><div class="line">  <span class="keyword">return</span> <span class="number">200</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上述声明了一个普通函数 fn，和一个 Generator 函数 gen，先执行如下代码</p>
+<p><code>let g = gen(1)</code><br>调用Generator 函数，返回一个存储状态对象的引用，这个时候 gen 这个函数是没执行的，所以当你执行上面这行代码不会有任何输出</p>
+<p><code>console.log( g.next() )</code><br>当调用<code>g.next()</code>时，gen 函数开始执行，执行到第一个yield 为止，并把 yield 表达式的值作为状态对象的值。更具体一点，上例先输出<code>x</code>也就是<code>1</code>，然后执行 <code>fn(x, 100)</code> 输出 <code>fn..</code>并返回101， 然后加3。这时候停止执行，把结果103赋值给状态对象 g，g 的结果变 {value: 103, done: false}。需要注意，yied表达式的优先级极其低，<code>yield fn(x,100) + 3</code>相当于 <code>yield (fn(x,100) + 3)</code></p>
+<p><code>console.log( g.next() )</code><br>这次执行<code>g.next()</code>的时候，代码由上次暂停处开始执行，但此时 yield 表达式的值并不是使用刚刚计算的结果，而是使用 <code>g.next</code>的参数<code>undefined</code>， 所以 y的值变为<code>undefined</code>，输出<code>undeined</code>。执行到<code>return 200</code>时，状态对象知道执行结束了，会把return的200赋值到状态对象，结果为 <code>{ value: 200, done: true }</code></p>
+<p>有同学会问，如何把刚刚计算的中间值103给下个yield来用呢？好问题，我们可以这样</p>
+<p><code>g.next(g.next().value)</code><br>想想为什么。现在可以回到我们的主题了，看看实现代码</p>
+<figure class="highlight zephir"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> fs = <span class="keyword">require</span>(<span class="string">'fs'</span>)</div><div class="line"><span class="keyword">const</span> markdown = <span class="keyword">require</span>(<span class="string">"markdown"</span>).markdown</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">readFile</span><span class="params">(url)</span> </span>&#123;</div><div class="line">  fs.readFile(url, <span class="string">'utf8'</span>, (err, str)=&gt;&#123;</div><div class="line">    <span class="keyword">if</span>(err)&#123;</div><div class="line">      g.<span class="keyword">throw</span>(<span class="string">'read error'</span>);</div><div class="line">    &#125;<span class="keyword">else</span>&#123;</div><div class="line">      g.next(str)  <span class="comment">//line4</span></div><div class="line">    &#125;</div><div class="line">  &#125;)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">writeFile</span><span class="params">(url, data)</span> </span>&#123;</div><div class="line">  fs.writeFile(url, data, (err, str)=&gt;&#123;</div><div class="line">    <span class="keyword">if</span>(err)&#123;</div><div class="line">      g.<span class="keyword">throw</span>(<span class="string">'write error'</span>);</div><div class="line">    &#125;<span class="keyword">else</span>&#123;</div><div class="line">      g.next()  <span class="comment">//line5</span></div><div class="line">    &#125;</div><div class="line">  &#125;)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">let</span> gen = <span class="function"><span class="keyword">function</span>* <span class="params">()</span> </span>&#123;</div><div class="line">  <span class="keyword">try</span>&#123;</div><div class="line">    <span class="keyword">let</span> mdStr = <span class="keyword">yield</span> readFile(<span class="string">'aa.md'</span>, <span class="string">'utf-8'</span>)   <span class="comment">//line3</span></div><div class="line">    console.log(mdStr)</div><div class="line">    <span class="keyword">let</span> html = markdown.toHTML(mdStr)</div><div class="line">    <span class="keyword">yield</span> fs.writeFile(<span class="string">'b.html'</span>, html)</div><div class="line">  &#125;<span class="keyword">catch</span>(e)&#123;</div><div class="line">    console.log(<span class="string">'error occur...'</span>) <span class="comment">//line6</span></div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">let</span> g = gen()  <span class="comment">//line1</span></div><div class="line"><span class="keyword">let</span> result = g.next()  <span class="comment">//line2</span></div></pre></td></tr></table></figure>
+<p>为了便于描述，我们在代码的关键行加了行号标记，代码执行流程如下：</p>
+<p>line1: 执行Generator，创建一个状态对象，此时函数内部并没有执行<br>line2: 调用g.next()，gen函数开始执行，此时会执行line3的readFile函数，而 gen 函数的控制权交出代码暂停<br>line4: 当文件读取后会调用 g.next(str), 此时会把控制权再次交给 gen，并把文件结果str做为参数交给Generator状态对象g<br>line3: 此时yield的结果就是刚刚传递的str，赋值给mdStr<br>… ,写文件的逻辑类似<br>line6: 当中间出现错误时,g会抛出异常，控制权交给gen后会捕获异常，处理报错</p>
+<p>如果能看懂上面的代码，说明对 Generator函数就理解了</p>
+<p>但虽然感觉用了更“高级”的技术，但与前面两种方法相比这种写法反而更丑陋难用。状态对象竟然在 readFile 和 writeFile 这两个普通函数里面调用…</p>
+<p>我们可以先做一些优化<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">readFile</span>(<span class="params">url</span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> <span class="function">(<span class="params">callback</span>)=&gt;</span>&#123;</div><div class="line">    fs.readFile(url, <span class="string">'utf-8'</span>, (err, str)=&gt;&#123;</div><div class="line">      <span class="keyword">if</span>(err) <span class="keyword">throw</span> err</div><div class="line">      callback(str)</div><div class="line">    &#125;)</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">//readFile('a.md')( (err, str)=&gt;&#123; console.log(str)&#125; ) </span></div><div class="line"><span class="comment">//将多个参数的调用转换成单个参数的调用，回想想那些常常提到的概念，如闭包、函数柯里化</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">writeFile</span>(<span class="params">url, data</span>)</span>&#123;</div><div class="line">  <span class="keyword">return</span> <span class="function">(<span class="params">callback</span>)=&gt;</span>&#123;</div><div class="line">    fs.writeFile(url, data, (err, str)=&gt;&#123;</div><div class="line">      <span class="keyword">if</span>(err) <span class="keyword">throw</span> err</div><div class="line">      callback()</div><div class="line">    &#125;)</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">// writeFile('b.html')( (err)=&gt;&#123;console.log('write ok')&#125; )</span></div><div class="line"></div><div class="line"><span class="keyword">let</span> gen = <span class="function"><span class="keyword">function</span>* (<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">try</span>&#123;</div><div class="line">    <span class="keyword">let</span> mdStr = <span class="keyword">yield</span> readFile(<span class="string">'a.md'</span>, <span class="string">'utf-8'</span>) <span class="comment">//line4</span></div><div class="line">    <span class="keyword">let</span> html = markdown.toHTML(mdStr)</div><div class="line">    <span class="keyword">yield</span> writeFile(<span class="string">'b.html'</span>, html)</div><div class="line">  &#125;<span class="keyword">catch</span>(e)&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'error occur...'</span>)</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">let</span> g = gen()   <span class="comment">//line1</span></div><div class="line">g.next().value(<span class="function"><span class="params">str</span>=&gt;</span>&#123;    <span class="comment">//line2</span></div><div class="line">  g.next(str).value(<span class="function"><span class="params">()</span>=&gt;</span>&#123;  <span class="comment">//line3</span></div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'write success'</span>)</div><div class="line">  &#125;)</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<p>line1: 执行Generator，创建一个状态对象，此时函数内部并没有执行,此时状态对象{value:undefined, done: false}<br>line2: 执行g.next()的时候开始执行gen函数，此时会执行readFile()， 而这个函数的执行会返回<strong>一个匿名函数</strong>。遇到yield 后gen函数暂停，把readFile()返回的匿名函数存储到状态对象的value里。所以g.next().value() 其实就是执行那个匿名函数，即 调用fs.readFile。当文件读取后，会调用fs.readFile里的 callback，而这个 callback 就是刚刚 g.next().value()的参数<br>line3: 调用g.next(str)让 gen 函数继续执行，同时把yield语句的结果用 str 来替换，代码继续往下走，到writeFile停止执行… 同步骤2</p>
+<p>真的是很绕，头都绕晕了。上面的写法除了稍微解耦以为，仍然很丑陋，主功能异步的执行需要 Generator不断的回调调用next才可以，如果有七层十层…</p>
+<p>下面做个个简单的优化，让Generator自动调用，知道状态变为done，原理大家自己好好想想</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">run</span>(<span class="title">fn</span>) &#123;</span></div><div class="line">  let gen = fn()</div><div class="line">  <span class="function"><span class="keyword">function</span> <span class="title">next</span>(<span class="title">data</span>) &#123;</span></div><div class="line">    let <span class="built_in">result</span> = gen.next(data)</div><div class="line">    <span class="keyword">if</span> (<span class="built_in">result</span>.done) <span class="literal">return</span></div><div class="line">    console.<span class="built_in">log</span>(<span class="built_in">result</span>.<span class="built_in">value</span>)</div><div class="line">    <span class="built_in">result</span>.<span class="built_in">value</span>(next)</div><div class="line">  &#125;</div><div class="line">  next()</div><div class="line">&#125;</div><div class="line"></div><div class="line">run(gen)</div></pre></td></tr></table></figure>
+<p>再也不想用 Generator 了！</p>
+<h3 id="co-模块"><a href="#co-模块" class="headerlink" title="co 模块"></a>co 模块</h3><p>co 模块是用于处理异步的一个node包，用于 Generator 函数的自动执行。<a href="co">NPM 地址</a>,模块内部原理可<a href="ECMAScript 6入门-模块">参考这里</a>, 本质上就是 Promise 和 Generator 的结合，和我们上个范例还是很像的。</p>
+<p>类似处理异步的比较出名的模块还有 <a href="async">async模块</a>(注意不是ES2017的async语法)、<a href="bluebird">bluebird</a></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>)</div><div class="line"><span class="keyword">const</span> markdown = <span class="built_in">require</span>(<span class="string">'markdown'</span>).markdown</div><div class="line"><span class="keyword">const</span> co = <span class="built_in">require</span>(<span class="string">'co'</span>)</div><div class="line"><span class="keyword">const</span> thunkify = <span class="built_in">require</span>(<span class="string">'thunkify'</span>)</div><div class="line"></div><div class="line"><span class="keyword">let</span> readFile = thunkify(fs.readFile)</div><div class="line"><span class="keyword">let</span> writeFile = thunkify(fs.writeFile)</div><div class="line"><span class="keyword">let</span> onerror = <span class="function"><span class="params">err</span>=&gt;</span>&#123;</div><div class="line">  <span class="built_in">console</span>.error(<span class="string">'something wrong...'</span>)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">let</span> gen = <span class="function"><span class="keyword">function</span>* (<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">let</span> mdStr = <span class="keyword">yield</span> readFile(<span class="string">'a.md'</span>, <span class="string">'utf-8'</span>)</div><div class="line">    <span class="keyword">let</span> html = markdown.toHTML(mdStr)</div><div class="line">    <span class="keyword">yield</span> writeFile(<span class="string">'b.html'</span>, html)</div><div class="line">&#125;</div><div class="line"></div><div class="line">co(gen).catch(onerror)</div></pre></td></tr></table></figure>
+<p>例子中 thunkify模块用于把一个函数thunk化，也就是我们上例中如下形式对异步函数进行包装。gen 的启动由 <code>co(gen)</code>来开启，和我们上一个范例类似</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">writeFile</span>(<span class="params">url, data</span>)</span>&#123;</div><div class="line">  <span class="keyword">return</span> <span class="function">(<span class="params">callback</span>)=&gt;</span>&#123;</div><div class="line">    fs.writeFile(url, data, (err, str)=&gt;&#123;</div><div class="line">      <span class="keyword">if</span>(err) <span class="keyword">throw</span> err</div><div class="line">      callback()</div><div class="line">    &#125;)</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>就像回到了男耕女织的田园生活，感觉世界一下子清爽了许多。</p>
+<h3 id="async-await"><a href="#async-await" class="headerlink" title="async/await"></a>async/await</h3><p>ES2017 标准引入了 async 函数，用于更方便的处理异步。 这个特性太新了，真要用需要babel来转码。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> markdown = <span class="built_in">require</span>(<span class="string">'markdown'</span>).markdown</div><div class="line"><span class="keyword">const</span> fsp = <span class="built_in">require</span>(<span class="string">'fs-promise'</span>)</div><div class="line"><span class="keyword">let</span> onerror = <span class="function"><span class="params">err</span>=&gt;</span>&#123;</div><div class="line">  <span class="built_in">console</span>.error(<span class="string">'something wrong...'</span>)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">start</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">let</span> mdStr = <span class="keyword">await</span> fsp.readFile(<span class="string">'a.md'</span>, <span class="string">'utf-8'</span>)</div><div class="line">    <span class="keyword">let</span> html = markdown.toHTML(mdStr)</div><div class="line">    <span class="keyword">await</span> fsp.writeFile(<span class="string">'b.html'</span>, html)</div><div class="line">&#125;</div><div class="line">start().catch(onerror)</div></pre></td></tr></table></figure>
+<p>async函数是对 Generator 函数的改进，实际上就是把Generator自动执行给封装起来，同时返回的是 Promise 对象更便于操作。</p>
+<p>用的时候需要注意await命令后面是一个 Promise 对象。</p>
+<p>上例中 fsp的作用是把内置的fs模块Promise 化，这个其实刚刚做过。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> readFile = <span class="function"><span class="keyword">function</span> (<span class="params">fileName</span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="keyword">function</span> (<span class="params">resolve, reject</span>) </span>&#123;</div><div class="line">    fs.readFile(fileName,<span class="string">'utf-8'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">error, data</span>) </span>&#123;</div><div class="line">      <span class="keyword">if</span> (error) reject(error);</div><div class="line">      resolve(data);</div><div class="line">    &#125;);</div><div class="line">  &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>上面几个例子实际上是异步处理的发展过程，从丑陋到精美，从引入各种乱七八糟的无关代码到精简到只保留核心业务功能，这也是任何框架和标准发展的趋势。</p>
+<p>有什么预见和期待？</p>
+<p>可以预见的是async/await慢慢会变成主流，现阶段用 co 也挺方便的，因为它们都很美。</p>
+<p>期待node内置的涉及异步操作的模块都逐步提供对Promise的规范的支持，期待 ES2017的快速普及，那世界就美好了。</p>
+<p>上面我们的功能不需要任何『外挂』将简化成</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> mdStr = <span class="keyword">await</span> fs.readFile(<span class="string">'a.md'</span>, <span class="string">'utf-8'</span>)</div><div class="line"><span class="keyword">let</span> html = markdown.toHTML(mdStr)</div><div class="line"><span class="keyword">await</span> fs.writeFile(<span class="string">'b.html'</span>, html)</div><div class="line">fs.onerror = <span class="function"><span class="params">()</span>=&gt;</span>&#123;<span class="built_in">console</span>.log(<span class="string">'error'</span>)&#125;</div></pre></td></tr></table></figure>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/javascript/" rel="tag">#javascript</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/15/https证书格式/" rel="next">https证书格式</a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+            </div>
+
+            
+
+            
+              <div class="comments" id="comments">
+                
+                  <div class="ds-thread" data-thread-key="2017/02/15/Node.js异步/"
+                       data-title="Node.js异步" data-url="http://kissss.com/2017/02/15/Node.js异步/">
+                  </div>
+                
+              </div>
+            
+        </div>
+
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/uploads/myicon.png" alt="kissss" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">kissss</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">kissss</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Node-js异步"><span class="nav-number">1.</span> <span class="nav-text">Node.js异步</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#范例"><span class="nav-number">1.0.1.</span> <span class="nav-text">范例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#callback回调地狱"><span class="nav-number">1.0.2.</span> <span class="nav-text">callback回调地狱</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Promise-处理回调"><span class="nav-number">1.0.3.</span> <span class="nav-text">Promise 处理回调</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Generator"><span class="nav-number">1.0.4.</span> <span class="nav-text">Generator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#co-模块"><span class="nav-number">1.0.5.</span> <span class="nav-text">co 模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#async-await"><span class="nav-number">1.0.6.</span> <span class="nav-text">async/await</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">1.0.7.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+    </main>
+
+    <footer id="footer" class="footer">
+        <div class="footer-inner">
+            <div class="copyright" >
+  
+  &copy; &nbsp;  2013 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kissss</span>
+</div>
+
+
+
+
+        </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+</div>
+
+<script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"kissss"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+    
+  
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.4"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.4"></script>
+  
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/js/motion_global.js?v=0.4.4" id="motion.global"></script>
+
+
+
+  <script type="text/javascript" src="/js/search-toggle.js"></script>
+
+
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.4" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+          var self = this;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      $(indicator).velocity('stop').velocity({
+        opacity: action === 'show' ? 0.4 : 0
+      }, { duration: 100 });
+    }
+
+  });
+</script>
+
+
+  <script type="text/javascript" id="sidebar.nav">
+    $(document).ready(function () {
+      var html = $('html');
+
+      $('.sidebar-nav li').on('click', function () {
+        var item = $(this);
+        var activeTabClassName = 'sidebar-nav-active';
+        var activePanelClassName = 'sidebar-panel-active';
+        if (item.hasClass(activeTabClassName)) {
+          return;
+        }
+
+        var currentTarget = $('.' + activePanelClassName);
+        var target = $('.' + item.data('target'));
+
+        currentTarget.velocity('transition.slideUpOut', 200, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', 200)
+            .addClass(activePanelClassName);
+        });
+
+        item.siblings().removeClass(activeTabClassName);
+        item.addClass(activeTabClassName);
+      });
+
+      $('.post-toc a').on('click', function (e) {
+        e.preventDefault();
+        var offset = $(escapeSelector(this.getAttribute('href'))).offset().top;
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        });
+      });
+
+      // Expand sidebar on post detail page by default, when post has a toc.
+      var $tocContent = $('.post-toc-content');
+      if (isDesktop() && CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    });
+  </script>
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        if (CONFIG.sidebar === 'always') {
+            displaySidebar();
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
+<!-- lazyload -->
+<script type="text/javascript" src="/js/lazyload.js"></script>
+<script type="text/javascript">
+    jQuery(function () {
+        jQuery("#posts img").lazyload({
+            placeholder: "/images/loading.gif",
+            effect: "fadeIn"
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,656 @@
+<!doctype html>
+<html class="theme-next use-motion theme-next-mist">
+<head>
+    
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.4"/>
+
+
+    <meta name="description" content="kissss" />
+
+
+
+  <meta name="keywords" content="nodejs," />
+
+
+
+
+
+  <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.4" />
+
+
+<meta name="description" content="#模板方法模式
+@(技术)[设计模式]
+
+在JavaScript开发中用到的继承场景其实并不是很多，很多时候我们都喜欢用mix-in的方式来给对象扩展属性。但这不代表继承在JavaScript种没有用武之地，虽然没有真正类和继承机制，但我们可以通过原型prototype来变相的实现继承
+
+##第一个例子-coffee  or tea
+###先泡一杯咖啡首先，我们来泡一杯咖啡，如果没有特殊的需求，泡">
+<meta property="og:type" content="article">
+<meta property="og:title" content="模板方法模式">
+<meta property="og:url" content="http://kissss.com/2016/01/05/模板方法模式/index.html">
+<meta property="og:site_name" content="kissss">
+<meta property="og:description" content="#模板方法模式
+@(技术)[设计模式]
+
+在JavaScript开发中用到的继承场景其实并不是很多，很多时候我们都喜欢用mix-in的方式来给对象扩展属性。但这不代表继承在JavaScript种没有用武之地，虽然没有真正类和继承机制，但我们可以通过原型prototype来变相的实现继承
+
+##第一个例子-coffee  or tea
+###先泡一杯咖啡首先，我们来泡一杯咖啡，如果没有特殊的需求，泡">
+<meta property="og:updated_time" content="2017-03-05T04:31:52.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="模板方法模式">
+<meta name="twitter:description" content="#模板方法模式
+@(技术)[设计模式]
+
+在JavaScript开发中用到的继承场景其实并不是很多，很多时候我们都喜欢用mix-in的方式来给对象扩展属性。但这不代表继承在JavaScript种没有用武之地，虽然没有真正类和继承机制，但我们可以通过原型prototype来变相的实现继承
+
+##第一个例子-coffee  or tea
+###先泡一杯咖啡首先，我们来泡一杯咖啡，如果没有特殊的需求，泡">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post'
+  };
+</script>
+
+    <title> 模板方法模式 // kissss </title>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+<!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?e4ba34f9a1864b1c468f14f335f6123e";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+<div class="container one-column page-post-detail">
+    <div class="headband"></div>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><h1 class="site-meta">
+  <span class="logo-line-before"><i></i></span>
+  <a href="/" class="brand" rel="start">
+      <span class="logo">
+        <i class="icon-logo"></i>
+      </span>
+      <span class="site-title">kissss</span>
+  </a>
+  <span class="logo-line-after"><i></i></span>
+</h1>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon icon-home"></i> <br />
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            <i class="menu-item-icon icon-categories"></i> <br />
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            <i class="menu-item-icon icon-archives"></i> <br />
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            <i class="menu-item-icon icon-tags"></i> <br />
+            标签
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+        </div>
+    </header>
+
+    <main id="main" class="main">
+        <div class="main-inner">
+            <div id="content" class="content">
+                
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              模板方法模式
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2016-01-05T17:14:22+08:00" content="2016-01-05">
+            2016-01-05
+          </time>
+        </span>
+
+        
+          <span class="post-category" >
+            &nbsp; | &nbsp; 分类于
+            
+              <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a href="/categories/nodejs/" itemprop="url" rel="index"><span itemprop="name">nodejs</span></a></span>
+
+              
+              
+
+            
+          </span>
+        
+
+        
+          
+            <span class="post-comments-count">
+              &nbsp; | &nbsp;
+              <a href="/2016/01/05/模板方法模式/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2016/01/05/模板方法模式/" itemprop="commentsCount"></span>
+              </a>
+            </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>#模板方法模式</p>
+<p>@(技术)[设计模式]</p>
+<blockquote>
+<p>在JavaScript开发中用到的继承场景其实并不是很多，很多时候我们都喜欢用mix-in的方式来给对象扩展属性。但这不代表继承在JavaScript种没有用武之地，虽然没有真正类和继承机制，但我们可以通过原型prototype来变相的实现继承</p>
+</blockquote>
+<p>##第一个例子-coffee  or tea</p>
+<p>###先泡一杯咖啡<br>首先，我们来泡一杯咖啡，如果没有特殊的需求，泡咖啡的步骤大致如下：</p>
+<ul>
+<li>把水烧沸</li>
+<li>用沸水冲泡咖啡</li>
+<li>吧咖啡放进被子</li>
+<li>加糖和牛奶</li>
+</ul>
+<p>通过下面的代码我们就能得到一杯香浓的咖啡：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> Coffee = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">&#125;</div><div class="line"></div><div class="line">Coffee.prototype.boilWater = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'把水煮沸'</span>);</div><div class="line">&#125;</div><div class="line">Coffee.prototype.berwCoffeeGrieds = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'用沸水泡咖啡'</span>);</div><div class="line">&#125;</div><div class="line">Coffee.prototype.pourInCup = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'把咖啡倒进被子中'</span>);</div><div class="line">&#125;</div><div class="line">Coffee.prototype.addSugarAndMilk = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'加糖和牛奶'</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line">Coffee.prototype.init = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.boilWater();</div><div class="line">    <span class="keyword">this</span>.berwCoffeeGrieds();</div><div class="line">    <span class="keyword">this</span>.pourInCup();</div><div class="line">    <span class="keyword">this</span>.addSugarAndMilk();</div><div class="line">&#125;</div><div class="line"><span class="keyword">var</span> coffee = <span class="keyword">new</span> Coffee();</div><div class="line">coffee.init();</div><div class="line"><span class="comment">//out:把水煮沸</span></div><div class="line"><span class="comment">//	用沸水泡咖啡</span></div><div class="line"><span class="comment">//	把咖啡倒进被子中</span></div><div class="line"><span class="comment">//	加糖和牛奶</span></div></pre></td></tr></table></figure></p>
+<p>###泡一壶茶<br>泡一壶茶和泡咖啡的步骤相差并不大，我们就直接用代码表示了：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> Tea = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">&#125;</div><div class="line"></div><div class="line">Tea.prototype.boilWater = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'把水煮沸'</span>);</div><div class="line">&#125;</div><div class="line">Tea.prototype.steepTeaBag = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'用沸水浸泡茶叶'</span>);</div><div class="line">&#125;</div><div class="line">Tea.prototype.pourInCup = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'把茶叶倒进被子中'</span>);</div><div class="line">&#125;</div><div class="line">Tea.prototype.addLemon = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'加柠檬'</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line">Tea.prototype.init = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.boilWater();</div><div class="line">    <span class="keyword">this</span>.steepTeaBag();</div><div class="line">    <span class="keyword">this</span>.pourInCup();</div><div class="line">    <span class="keyword">this</span>.addLemon();</div><div class="line">&#125;</div><div class="line"><span class="keyword">var</span> tea = <span class="keyword">new</span> Tea();</div><div class="line">tea.init();</div><div class="line"><span class="comment">//out:</span></div><div class="line"><span class="comment">//把水煮沸</span></div><div class="line"><span class="comment">//用沸水浸泡茶叶</span></div><div class="line"><span class="comment">//把茶叶倒进被子中</span></div><div class="line"><span class="comment">//加柠檬</span></div></pre></td></tr></table></figure>
+<p>###分离出共同点<br>我们对边两个过程得知</p>
+<ul>
+<li>原料不同，一个咖啡，一个茶，但是我们都可以抽象为 饮料</li>
+<li>泡的方式不一样</li>
+<li>加入的调料不一样</li>
+</ul>
+<p>我们将上述的步骤抽象为一个饮料对象，这个对象包含以下步骤：</p>
+<ul>
+<li>把水煮沸</li>
+<li>用沸水冲泡材料</li>
+<li>把饮料倒进杯子</li>
+<li>加调料</li>
+</ul>
+<p>我们抽象出的 Beverage 类如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> Beverage = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">&#125;</div><div class="line">Beverage.prototype.boilWater = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'把水煮沸'</span>);</div><div class="line">&#125;</div><div class="line">Beverage.prototype.brew = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;   <span class="comment">//空方法，由子类重写</span></div><div class="line">&#125;</div><div class="line">Beverage.prototype.pourInCup = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;<span class="comment">//空方法，由子类重写</span></div><div class="line">&#125;</div><div class="line">Beverage.prototype.addCodiments = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;<span class="comment">//空方法，由子类重写</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">Beverage.prototype.init = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.boilWater();</div><div class="line">    <span class="keyword">this</span>.brew();</div><div class="line">    <span class="keyword">this</span>.pourInCup();</div><div class="line">    <span class="keyword">this</span>.addCodiments();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>###创建coffee子类和tea子类</p>
+<p>代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">var</span> Coffee = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line"></div><div class="line">&#125;</div><div class="line">Coffee.prototype = <span class="keyword">new</span> Beverage();</div><div class="line"></div><div class="line">Coffee.prototype.brew = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'用沸水泡咖啡'</span>);</div><div class="line">&#125;</div><div class="line">Coffee.prototype.pourInCup = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'吧咖啡放到杯子里'</span>);</div><div class="line">&#125;</div><div class="line">Coffee.prototype.addCodiments = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'加糖和牛奶'</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">var</span> coffee = <span class="keyword">new</span> Coffee();</div><div class="line">coffee.init();</div><div class="line"></div><div class="line"><span class="keyword">var</span> Tea = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line"></div><div class="line">&#125;</div><div class="line">Tea.prototype = <span class="keyword">new</span> Beverage();</div><div class="line"></div><div class="line">Tea.prototype.brew = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'用沸水浸泡茶叶'</span>);</div><div class="line">&#125;</div><div class="line">Tea.prototype.pourInCup = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'把茶叶倒进被子中'</span>);</div><div class="line">&#125;</div><div class="line">Tea.prototype.addCodiments = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'加柠檬'</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">var</span> tea = <span class="keyword">new</span> Tea();</div><div class="line">tea.init();</div></pre></td></tr></table></figure>
+<p>本文一直说的模板方法，在上面的例子所谓的模板方法是什么呢，就是Beverage.prototype.init<br>Beverage.prototype.init 被成为模板方法原因是因为改方法中封装了子类的算法框架，它作为一个算法模板，指导子类以何种顺序去执行哪些方法。</p>
+<p>##抽象<br>由于JavaScript语言的特性，并没有很好的支持抽象类。如果是在java中上面的例子很好实现，在本文就不在赘述，有兴趣的朋友可以去网上查阅。<br>JavaScript并没有从语法层面提供抽象类的支持。我们在JavaScript使用原型继承来模拟传统方式继承时，并没有编译器帮助我们进行任何形式的检查，我们也没有办法保证子类会重写父类中的抽象方法。</p>
+<p>在java中的编译器会保证子类会重写父类的抽象方法，但在JavaScript中并没有任何检查，下面提供两种解决方案：</p>
+<ul>
+<li>1，用鸭子类型赖模拟检查接口，这就需要我们程序员主动进行这种接口检查，在代码种添加了很多无意义，和业务逻辑无关的代码，也为程序带来了不必要的复杂性</li>
+<li>2，让 Beverage.prototype.brew 等方法抛出一个异常，如果粗心忘记重写 Tea.prototype.brew 等方法，至少我们程序在执行的过程中会得到一个错误：<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">Beverage.prototype.brew = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'子类必须重写brew方法'</span>);</div><div class="line">&#125;</div><div class="line">Beverage.prototype.pourInCup = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'子类必须重写pourInCup方法'</span>);</div><div class="line">&#125;</div><div class="line">Beverage.prototype.addCodiments = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'子类必须重写addCodiments方法'</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>第二种解决方案优点是实现简单，付出的额外代码很少；缺点是我们得到的错误信息的时间太靠后。</p>
+<p>##真的需要继承吗?</p>
+<p>模板方法模式是基于继承的一种设计模式，父类封装了子类的算法框架和方法执行顺序，子类继承父类之后，父类通过子类执行这种方法，即高层组件调用底层组件。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">var</span> Beverage = <span class="function"><span class="keyword">function</span>(<span class="params">param</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> boilWater = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'把水煮沸'</span>);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">var</span> brew = param.brew || <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'必须重写 berw 方法'</span>);</div><div class="line">        &#125;</div><div class="line">    <span class="keyword">var</span> pourInCup = param.pourInCup || <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'必须重写  pourInCup 方法'</span>);</div><div class="line">        &#125;</div><div class="line">    <span class="keyword">var</span> addCondiments = param.addCondiments || <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'必须重写 addCondiments 方法'</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">    <span class="keyword">var</span> F = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line">    F.prototype.init = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        boilWater();</div><div class="line">        brew();</div><div class="line">        pourInCup();</div><div class="line">        addCondiments();</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> F;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">var</span> Coffee = Beverage(&#123;</div><div class="line">    <span class="attr">brew</span>: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'用沸水冲泡咖啡'</span>);</div><div class="line">    &#125;,</div><div class="line">    <span class="attr">pourInCup</span>: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'吧咖啡放到杯子里'</span>);</div><div class="line">    &#125;,</div><div class="line">    <span class="attr">addCondiments</span>: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="built_in">console</span>.log(<span class="string">'用沸水冲泡咖啡'</span>);</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line"><span class="keyword">new</span> Coffee().init();</div></pre></td></tr></table></figure>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/nodejs/" rel="tag">#nodejs</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/17/深入理解Node.js内存管理和垃圾回收/" rel="prev">深入理解Node.js内存管理和垃圾回收</a>
+            
+          </div>
+
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/01/05/代理模式详解/" rel="next">代理模式详解</a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+            </div>
+
+            
+
+            
+              <div class="comments" id="comments">
+                
+                  <div class="ds-thread" data-thread-key="2016/01/05/模板方法模式/"
+                       data-title="模板方法模式" data-url="http://kissss.com/2016/01/05/模板方法模式/">
+                  </div>
+                
+              </div>
+            
+        </div>
+
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/uploads/myicon.png" alt="kissss" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">kissss</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">kissss</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <p class="post-toc-empty">此文章未包含目录</p>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+    </main>
+
+    <footer id="footer" class="footer">
+        <div class="footer-inner">
+            <div class="copyright" >
+  
+  &copy; &nbsp;  2013 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kissss</span>
+</div>
+
+
+
+
+        </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+</div>
+
+<script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"kissss"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+    
+  
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.4"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.4"></script>
+  
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/js/motion_global.js?v=0.4.4" id="motion.global"></script>
+
+
+
+  <script type="text/javascript" src="/js/search-toggle.js"></script>
+
+
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.4" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+          var self = this;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      $(indicator).velocity('stop').velocity({
+        opacity: action === 'show' ? 0.4 : 0
+      }, { duration: 100 });
+    }
+
+  });
+</script>
+
+
+  <script type="text/javascript" id="sidebar.nav">
+    $(document).ready(function () {
+      var html = $('html');
+
+      $('.sidebar-nav li').on('click', function () {
+        var item = $(this);
+        var activeTabClassName = 'sidebar-nav-active';
+        var activePanelClassName = 'sidebar-panel-active';
+        if (item.hasClass(activeTabClassName)) {
+          return;
+        }
+
+        var currentTarget = $('.' + activePanelClassName);
+        var target = $('.' + item.data('target'));
+
+        currentTarget.velocity('transition.slideUpOut', 200, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', 200)
+            .addClass(activePanelClassName);
+        });
+
+        item.siblings().removeClass(activeTabClassName);
+        item.addClass(activeTabClassName);
+      });
+
+      $('.post-toc a').on('click', function (e) {
+        e.preventDefault();
+        var offset = $(escapeSelector(this.getAttribute('href'))).offset().top;
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        });
+      });
+
+      // Expand sidebar on post detail page by default, when post has a toc.
+      var $tocContent = $('.post-toc-content');
+      if (isDesktop() && CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    });
+  </script>
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        if (CONFIG.sidebar === 'always') {
+            displaySidebar();
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
+<!-- lazyload -->
+<script type="text/javascript" src="/js/lazyload.js"></script>
+<script type="text/javascript">
+    jQuery(function () {
+        jQuery("#posts img").lazyload({
+            placeholder: "/images/loading.gif",
+            effect: "fadeIn"
+        });
+    });
+</script>
+</body>
+</html>

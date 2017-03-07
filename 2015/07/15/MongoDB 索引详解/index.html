@@ -1,0 +1,665 @@
+<!doctype html>
+<html class="theme-next use-motion theme-next-mist">
+<head>
+    
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.4"/>
+
+
+    <meta name="description" content="kissss" />
+
+
+
+  <meta name="keywords" content="数据库,mongodb," />
+
+
+
+
+
+  <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.4" />
+
+
+<meta name="description" content="大家先看这样一篇文章,转自 cnode @DoubleSpout
+##mongodb索引最近碰到这样的一个需求，一张酒店政策优惠表，我们要根据用户入住和离开的时间，计算一家酒店的最低价政策前10位，数据库表字段如下：
+1234567&apos;hid&apos;:88,     酒店id&apos;date&apos;:20150530,  入住日期整形(不要纠结unix时间戳)&apos;enable&apos;:1,  政策是否启用&apos;price&apos;:10">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MongoDB 索引详解">
+<meta property="og:url" content="http://kissss.com/2015/07/15/MongoDB 索引详解/index.html">
+<meta property="og:site_name" content="kissss">
+<meta property="og:description" content="大家先看这样一篇文章,转自 cnode @DoubleSpout
+##mongodb索引最近碰到这样的一个需求，一张酒店政策优惠表，我们要根据用户入住和离开的时间，计算一家酒店的最低价政策前10位，数据库表字段如下：
+1234567&apos;hid&apos;:88,     酒店id&apos;date&apos;:20150530,  入住日期整形(不要纠结unix时间戳)&apos;enable&apos;:1,  政策是否启用&apos;price&apos;:10">
+<meta property="og:updated_time" content="2017-03-05T04:31:52.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MongoDB 索引详解">
+<meta name="twitter:description" content="大家先看这样一篇文章,转自 cnode @DoubleSpout
+##mongodb索引最近碰到这样的一个需求，一张酒店政策优惠表，我们要根据用户入住和离开的时间，计算一家酒店的最低价政策前10位，数据库表字段如下：
+1234567&apos;hid&apos;:88,     酒店id&apos;date&apos;:20150530,  入住日期整形(不要纠结unix时间戳)&apos;enable&apos;:1,  政策是否启用&apos;price&apos;:10">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post'
+  };
+</script>
+
+    <title> MongoDB 索引详解 // kissss </title>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+<!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?e4ba34f9a1864b1c468f14f335f6123e";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+<div class="container one-column page-post-detail">
+    <div class="headband"></div>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><h1 class="site-meta">
+  <span class="logo-line-before"><i></i></span>
+  <a href="/" class="brand" rel="start">
+      <span class="logo">
+        <i class="icon-logo"></i>
+      </span>
+      <span class="site-title">kissss</span>
+  </a>
+  <span class="logo-line-after"><i></i></span>
+</h1>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon icon-home"></i> <br />
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            <i class="menu-item-icon icon-categories"></i> <br />
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            <i class="menu-item-icon icon-archives"></i> <br />
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            <i class="menu-item-icon icon-tags"></i> <br />
+            标签
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+        </div>
+    </header>
+
+    <main id="main" class="main">
+        <div class="main-inner">
+            <div id="content" class="content">
+                
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              MongoDB 索引详解
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2015-07-15T16:56:24+08:00" content="2015-07-15">
+            2015-07-15
+          </time>
+        </span>
+
+        
+          <span class="post-category" >
+            &nbsp; | &nbsp; 分类于
+            
+              <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a href="/categories/mongodb/" itemprop="url" rel="index"><span itemprop="name">mongodb</span></a></span>
+
+              
+              
+
+            
+          </span>
+        
+
+        
+          
+            <span class="post-comments-count">
+              &nbsp; | &nbsp;
+              <a href="/2015/07/15/MongoDB 索引详解/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2015/07/15/MongoDB 索引详解/" itemprop="commentsCount"></span>
+              </a>
+            </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>大家先看这样一篇文章,转自 <a href="https://cnodejs.org/topic/555bf91ee684c4c8088a0c0f" target="_blank" rel="external">cnode @DoubleSpout</a></p>
+<p>##mongodb索引<br>最近碰到这样的一个需求，一张酒店政策优惠表，我们要根据用户入住和离开的时间，计算一家酒店的最低价政策前10位，数据库表字段如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="string">'hid'</span>:<span class="number">88</span>,     酒店id</div><div class="line"><span class="string">'date'</span>:<span class="number">20150530</span>,  入住日期整形(不要纠结unix时间戳)</div><div class="line"><span class="string">'enable'</span>:<span class="number">1</span>,  政策是否启用</div><div class="line"><span class="string">'price'</span>:<span class="number">100</span>,  政策价格</div><div class="line"><span class="string">'name'</span>:<span class="string">'abc'</span>,  政策名称</div><div class="line"><span class="string">'position'</span>:<span class="string">'china'</span>,  酒店位置</div><div class="line"><span class="string">'writeTime'</span>:datetime.datetime.now(),        写入时间</div></pre></td></tr></table></figure>
+<p>我们的查询语句也相对固定，都是这样的:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.getCollection(<span class="string">'hotels'</span>).find(&#123;<span class="string">"hid"</span>:<span class="number">88</span>, <span class="string">"date"</span>:&#123;<span class="string">"$gte"</span>:<span class="number">20150501</span>, <span class="string">"$lte"</span>:<span class="number">20150510</span>&#125;, <span class="string">"enable"</span>:<span class="number">1</span>&#125;).sort(&#123;<span class="string">"price"</span>:<span class="number">1</span>&#125;).limit(<span class="number">10</span>)</div></pre></td></tr></table></figure>
+<p>其中条件分为3个：<br>1、酒店 id ：”hid”:88<br>2、date在某个区间里<br>3、enable启用为1，表示启用<br>排序条件是一个：<br>1、price正序排序</p>
+<p>现在我往数据库插入10万条测试数据，插入脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># -*- coding: utf-8 -*-</span></div><div class="line"><span class="keyword">import</span> pymongo</div><div class="line"><span class="keyword">import</span> json</div><div class="line"><span class="keyword">import</span> datetime,time</div><div class="line"><span class="keyword">import</span> sys</div><div class="line"><span class="keyword">import</span> copy</div><div class="line"><span class="keyword">import</span> sys, os</div><div class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Process, Value, Array</div><div class="line"><span class="keyword">from</span> hashlib <span class="keyword">import</span> md5</div><div class="line"><span class="keyword">from</span> random <span class="keyword">import</span> choice, randint</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">getTimestampFromDatetime</span><span class="params">(d=None)</span>:</span></div><div class="line">    <span class="keyword">if</span> d <span class="keyword">is</span> <span class="keyword">None</span>:</div><div class="line">        d = datetime.datetime.now()</div><div class="line">    <span class="keyword">return</span> time.mktime(d.timetuple())</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">md5Hash</span><span class="params">(str)</span>:</span></div><div class="line">    m = md5()</div><div class="line">    m.update(str)</div><div class="line">    <span class="keyword">return</span> m.hexdigest().upper()</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">task</span><span class="params">()</span>:</span></div><div class="line">    <span class="comment">#10分之一的概率无法使用</span></div><div class="line">    enableList = [<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0</span>]</div><div class="line">    dateList = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">31</span>):</div><div class="line">        dateInt = <span class="number">20150501</span></div><div class="line">        dateList.append(dateInt+i)</div><div class="line"></div><div class="line">    mongoUri = <span class="string">'mongodb://10.14.40.62:27017/hotel'</span></div><div class="line">    all_data = &#123;</div><div class="line">        <span class="string">'hid'</span>:<span class="number">0</span>,</div><div class="line">        <span class="string">'date'</span>:<span class="number">0</span>,</div><div class="line">        <span class="string">'enable'</span>:<span class="number">0</span>,</div><div class="line">        <span class="string">'price'</span>:<span class="number">0</span>,</div><div class="line">        <span class="string">'name'</span>:<span class="string">'abc'</span>,</div><div class="line">        <span class="string">'position'</span>:<span class="string">'china'</span>,</div><div class="line">        <span class="string">'writeTime'</span>:datetime.datetime.now(),</div><div class="line">    &#125;</div><div class="line">    tableName = <span class="string">'hotels'</span></div><div class="line">    client = pymongo.MongoClient(mongoUri, max_pool_size=<span class="number">100</span>)</div><div class="line">    db = client.hotel</div><div class="line"></div><div class="line">    listData = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">100000</span>):</div><div class="line">        all_data[<span class="string">'price'</span>] = randint(<span class="number">100</span>, <span class="number">10000</span>)</div><div class="line">        all_data[<span class="string">'enable'</span>] = choice(enableList)</div><div class="line">        all_data[<span class="string">'date'</span>] = choice(dateList)</div><div class="line">        all_data[<span class="string">'hid'</span>] = randint(<span class="number">1</span>, <span class="number">100</span>)</div><div class="line">        listData.append(copy.copy(all_data))</div><div class="line"></div><div class="line">    db[tableName].insert(listData)</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    start = getTimestampFromDatetime()</div><div class="line">    task()</div><div class="line">    end = getTimestampFromDatetime()</div><div class="line">    print(<span class="string">'time: &#123;0&#125;s'</span>.format(end-start))</div></pre></td></tr></table></figure>
+<p>###不建任何索引查询：</p>
+<p>我们执行如下语句，查看语句执行情况：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">db.getCollection(<span class="string">'hotels'</span>).find(&#123;<span class="string">"hid"</span>:<span class="number">88</span>, <span class="string">"date"</span>:&#123;<span class="string">"$gte"</span>:<span class="number">20150501</span>, <span class="string">"$lte"</span>:<span class="number">20150510</span>&#125;, <span class="string">"enable"</span>:<span class="number">1</span>&#125;).sort(&#123;<span class="string">"price"</span>:<span class="number">1</span>&#125;).limit(<span class="number">10</span>).explain()</div></pre></td></tr></table></figure>
+<p>我们看到结果：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="string">"n"</span> : <span class="number">10</span>,</div><div class="line"><span class="string">"nscannedObjects"</span> : <span class="number">100000</span>,</div><div class="line"><span class="string">"nscanned"</span> : <span class="number">100000</span>,</div><div class="line">...</div><div class="line"><span class="string">"scanAndOrder"</span> : <span class="literal">true</span>,</div><div class="line">...</div><div class="line"><span class="string">"millis"</span> : <span class="number">200</span>,</div></pre></td></tr></table></figure>
+<p>其中 n 表示最终返回的结果，nscannedObjects表示我们扫描了多少数据，scanAndOrder表示我们进行了扫描并排序的操作，这是非常消耗cpu和内存的。</p>
+<p>从结果来看，我们对10万条数据进行了全表扫描，最终得出10条结果出来。显然这个方案我们不能接受，时间我们花费了200毫秒，这个速度如果上线应用，肯定是不行的。</p>
+<p>###对hid加上索引</p>
+<p>我们很容易就想到，对hid加上索引，这样我们第一个结果hid的搜索就可以快速将酒店的索引返回缩小，于是我们创建酒店 hid 的索引，然后同样执行上述语句。<br>索引如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    <span class="string">"hid"</span> : <span class="number">1</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>结果如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="string">"n"</span> : <span class="number">10</span>,</div><div class="line"><span class="string">"nscannedObjects"</span> : <span class="number">1024</span>,</div><div class="line"><span class="string">"nscanned"</span> : <span class="number">1024</span>,</div><div class="line">...</div><div class="line"><span class="string">"scanAndOrder"</span> : <span class="literal">true</span>,</div><div class="line">...</div><div class="line"><span class="string">"millis"</span> : <span class="number">58</span>ms,</div></pre></td></tr></table></figure>
+<p>对比上述的结果，我们把200ms的查询通过hid索引一下优化到了58ms，从扫描全表10万条数据，修改为只扫描了1024条数据，同时我们的响应时间也下降到了58ms，我们是否可以再优化一下呢？</p>
+<p>###建立hid和date的联合索引</p>
+<p>我们发现查询还有第二个参数，date作为时间范围的，所以我们建立一个联合索引，hid:1, date:1这是否可以更加快一些？索引如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    <span class="string">"hid"</span> : <span class="number">1</span>,</div><div class="line">    <span class="string">"date"</span> : <span class="number">1</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>结果如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="string">"n"</span> : <span class="number">10</span>,</div><div class="line"><span class="string">"nscannedObjects"</span> : <span class="number">326</span>,</div><div class="line"><span class="string">"nscanned"</span> : <span class="number">326</span>,</div><div class="line">...</div><div class="line"><span class="string">"scanAndOrder"</span> : <span class="literal">true</span>,</div><div class="line">...</div><div class="line"><span class="string">"millis"</span> : <span class="number">6</span>ms,</div></pre></td></tr></table></figure>
+<p>经过再次优化，这个查询一下就变成6ms返回，只扫描了326行数据了。但是我们只需要返回10条数据，扫描了300多行数据，是否可以再进行一次优化？</p>
+<p>###建立hid、date、enable的联合索引</p>
+<p>我们发现查询条件还有第三个参数 enable，由于enable大约有10分之一的数据是我们不要的，就是未启用的政策，所以我们把enable字段也加到索引中，索引如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    <span class="string">"hid"</span> : <span class="number">1</span>,</div><div class="line">    <span class="string">"date"</span> : <span class="number">1</span>,</div><div class="line">    <span class="string">"enable"</span> : <span class="number">1</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>执行结果如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="string">"n"</span> : <span class="number">10</span>,</div><div class="line"><span class="string">"nscannedObjects"</span> : <span class="number">291</span>,</div><div class="line"><span class="string">"nscanned"</span> : <span class="number">300</span>,</div><div class="line">...</div><div class="line"><span class="string">"scanAndOrder"</span> : <span class="literal">true</span>,</div><div class="line">...</div><div class="line"><span class="string">"millis"</span> : <span class="number">5</span>ms,</div></pre></td></tr></table></figure>
+<p>这里nscanned和nscannedObjects不同，nscanned：300表示从数据库索引条目中搜索了300条数据，nscannedObjects表示在这300条中，出最终的10条记录，扫描了这300条中的291条。</p>
+<p>根据上面的结果，我们通过索引又进一步优化了这个查询，但是还不满足，我是否可以再增加sort排序的索引来优化呢？</p>
+<p>###建立hid，date，enable，price联合索引</p>
+<p>我们把排序的索引也加到联合索引中，看看还能否再进一步优化这个查询了，建立索引如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    <span class="string">"hid"</span> : <span class="number">1</span>,</div><div class="line">    <span class="string">"date"</span> : <span class="number">1</span>,</div><div class="line">    <span class="string">"enable"</span> : <span class="number">1</span>,</div><div class="line">    <span class="string">"price"</span> : <span class="number">1</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>同样的执行语句结果如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="string">"n"</span> : <span class="number">10</span>,</div><div class="line"><span class="string">"nscannedObjects"</span> : <span class="number">291</span>,</div><div class="line"><span class="string">"nscanned"</span> : <span class="number">300</span>,</div><div class="line">...</div><div class="line"><span class="string">"scanAndOrder"</span> : <span class="literal">true</span>,</div><div class="line">...</div><div class="line"><span class="string">"millis"</span> : <span class="number">5</span>ms,</div></pre></td></tr></table></figure>
+<p>我们发现，无论是 nscannedObjects 还是 nscanned，以及查询时间都没有任何帮助了，和之前一样了，似乎我们的优化已经完成了。</p>
+<p>###建立逆索引试试<br>因为我们的查询条件有一个date作为区间查询的，而最终我们要得到的是根据price排序的结果，所以我们这样建立索引，看看是否对我们的查询有所帮助：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    <span class="string">"hid"</span> : <span class="number">1</span>,</div><div class="line">    <span class="string">"price"</span> : <span class="number">1</span>,</div><div class="line">    <span class="string">"date"</span> : <span class="number">1</span>,</div><div class="line">    <span class="string">"enable"</span> : <span class="number">1</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>执行结果如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="string">"n"</span> : <span class="number">10</span>,</div><div class="line"><span class="string">"nscannedObjects"</span> : <span class="number">10</span>,</div><div class="line"><span class="string">"nscanned"</span> : <span class="number">37</span>,</div><div class="line">...</div><div class="line"><span class="string">"scanAndOrder"</span> : <span class="literal">false</span>,</div><div class="line">...</div><div class="line"><span class="string">"millis"</span> : <span class="number">0</span>ms,</div></pre></td></tr></table></figure>
+<p>看到结果令人满意，我们把成功的把一个原来200ms的查询优化到0ms了，我们从索引查找到37条记录保存在内存里，同时我们只扫描了其中的10条记录就把结果返回了。同时 scanAndOrder 这个字段也成为了false，表示我们没有做在内存里的扫描和排序操作，将会降低cpu和内存的消耗，我们的优化已经完成了。</p>
+<p>不过需要指出一点，如果从写入性能来讲，可以考虑把 “enable” : 1 从索引中拿走，毕竟这个索引并不能很好的帮助我们大量减少筛选的数据。</p>
+<p>总结一下：<br>对于这种查询条件有 $in, $gte 等的区间操作的，并且带有sort排序的查询，合理的索引的建立，如果有条件优化到 scanAndOrder 结果为false，将大大的提升我们的数据库性能和响应时间。</p>
+<hr>
+<p>由此可见，建立合适程序的索引都多么重要，下面推荐一款分析mongodb.log ,自动化简历索引的工具 <a href="https://github.com/mongolab/dex" target="_blank" rel="external">dex</a></p>
+<h2 id="dex"><a href="#dex" class="headerlink" title="dex"></a>dex</h2><p>因为使用Python写的，所以需要安装pip工具，类似pip类似RedHat里面的yum，安装软件非常方便。如果已经安装了，可以跳过。</p>
+<h3 id="pip安装"><a href="#pip安装" class="headerlink" title="pip安装"></a>pip安装</h3><h4 id="pip下载"><a href="#pip下载" class="headerlink" title="pip下载"></a>pip下载</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">wget &quot;https://pypi.python.org/packages/source/p/pip/pip-1.5.4.tar.gz#md5=834b2904f92d46aaa333267fb1c922bb&quot; --no-check-certificate</div></pre></td></tr></table></figure>
+<p>####pip安装</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">tar -xzvf pip-1.5.4.tar.gz</div><div class="line">cd pip-1.5.4</div><div class="line">python setup.py install  //如果报错,可以在前面加上sudo</div></pre></td></tr></table></figure>
+<h3 id="pip使用详解"><a href="#pip使用详解" class="headerlink" title="pip使用详解"></a>pip使用详解</h3><p>####pip安装软件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">pip install SomePackage</div><div class="line">  [...]</div><div class="line">  Successfully installed SomePackage</div></pre></td></tr></table></figure></p>
+<p>####pip查看已安装的软件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">pip show --files SomePackage</div><div class="line"> Name: SomePackage</div><div class="line"> Version: 1.0</div><div class="line"> Location: /my/env/lib/pythonx.x/site-packages</div><div class="line"> Files:</div><div class="line">  ../somepackage/__init__.py</div><div class="line">  [...]</div></pre></td></tr></table></figure></p>
+<p>####pip检查哪些软件需要更新</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">pip list --outdated</div><div class="line">  SomePackage (Current: 1.0 Latest: 2.0)</div></pre></td></tr></table></figure>
+<p>####pip升级软件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">pip install --upgrade SomePackage</div><div class="line"> [...]</div><div class="line"> Found existing installation: SomePackage 1.0</div><div class="line"> Uninstalling SomePackage:</div><div class="line">   Successfully uninstalled SomePackage</div><div class="line"> Running setup.py install for SomePackage</div><div class="line"> Successfully installed SomePackage</div></pre></td></tr></table></figure>
+<p>####pip卸载软件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">pip uninstall SomePackage</div><div class="line">  Uninstalling SomePackage:</div><div class="line">    /my/env/lib/pythonx.x/site-packages/somepackage</div><div class="line">  Proceed (y/n)? y</div><div class="line">  Successfully uninstalled SomePackage</div></pre></td></tr></table></figure>
+<p>##实战</p>
+<h3 id="安装-dex"><a href="#安装-dex" class="headerlink" title="安装 dex"></a>安装 dex</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip install dex</div></pre></td></tr></table></figure>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">dex -f my/mongod/data/path/mongodb.log mongodb://myUser:myPass@myHost:12345/myDb</div></pre></td></tr></table></figure>
+<p>最后会显示如下的结果,帮助我们分析数据库索引,给我们相应的建议:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    <span class="string">'runStats'</span>: &#123;</div><div class="line">        <span class="string">'linesRecommended'</span>: <span class="number">1549</span>,</div><div class="line">        <span class="string">'linesProcessed'</span>: <span class="number">2406</span>,</div><div class="line">        <span class="string">'linesPassed'</span>: <span class="number">558703</span></div><div class="line">    &#125;,</div><div class="line">    <span class="string">'results'</span>: [</div><div class="line">        &#123;</div><div class="line">            <span class="string">'queryMask'</span>: <span class="string">'&#123;"$query":&#123;"_id":"&lt;val&gt;","deviceType":"&lt;val&gt;","dpr":"&lt;val&gt;","frequency":"&lt;val&gt;","screen":"&lt;val&gt;","ua":"&lt;val&gt;"&#125;&#125;'</span>,</div><div class="line">            <span class="string">'namespace'</span>: <span class="string">'analytics.devices'</span>,</div><div class="line">            <span class="string">'recommendation'</span>: &#123;</div><div class="line">                <span class="string">'index'</span>: <span class="string">'&#123;"_id": 1, "ua": 1, "screen": 1, "dpr": 1, "deviceType": 1, "frequency": 1&#125;'</span>,</div><div class="line">                <span class="string">'namespace'</span>: <span class="string">'analytics.devices'</span>,</div><div class="line">                <span class="string">'shellCommand'</span>: <span class="string">'db["devices"].ensureIndex(&#123;"_id": 1, "ua": 1, "screen": 1, "dpr": 1, "deviceType": 1, "frequency": 1&#125;, &#123;"background": true&#125;)'</span></div><div class="line">            &#125;,</div><div class="line">            <span class="string">'details'</span>: &#123;</div><div class="line">                <span class="string">'count'</span>: <span class="number">860</span>,</div><div class="line">                <span class="string">'totalTimeMillis'</span>: <span class="number">185086</span>,</div><div class="line">                <span class="string">'avgTimeMillis'</span>: <span class="number">215</span></div><div class="line">            &#125;</div><div class="line">        &#125;,</div><div class="line">      ...</div></pre></td></tr></table></figure>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/数据库/" rel="tag">#数据库</a>
+          
+            <a href="/tags/mongodb/" rel="tag">#mongodb</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/07/18/mac 使用 rzsz 远程上传/" rel="prev">mac 使用 rzsz 远程上传</a>
+            
+          </div>
+
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/07/15/Javascript Promise/" rel="next">JavaScript Promise</a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+            </div>
+
+            
+
+            
+              <div class="comments" id="comments">
+                
+                  <div class="ds-thread" data-thread-key="2015/07/15/MongoDB 索引详解/"
+                       data-title="MongoDB 索引详解" data-url="http://kissss.com/2015/07/15/MongoDB 索引详解/">
+                  </div>
+                
+              </div>
+            
+        </div>
+
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/uploads/myicon.png" alt="kissss" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">kissss</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">kissss</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#dex"><span class="nav-number">1.</span> <span class="nav-text">dex</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#pip安装"><span class="nav-number">1.1.</span> <span class="nav-text">pip安装</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#pip下载"><span class="nav-number">1.1.1.</span> <span class="nav-text">pip下载</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pip使用详解"><span class="nav-number">1.2.</span> <span class="nav-text">pip使用详解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装-dex"><span class="nav-number">1.3.</span> <span class="nav-text">安装 dex</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用"><span class="nav-number">1.4.</span> <span class="nav-text">使用</span></a></li></ol></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+    </main>
+
+    <footer id="footer" class="footer">
+        <div class="footer-inner">
+            <div class="copyright" >
+  
+  &copy; &nbsp;  2013 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kissss</span>
+</div>
+
+
+
+
+        </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+</div>
+
+<script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"kissss"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+    
+  
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.4"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.4"></script>
+  
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/js/motion_global.js?v=0.4.4" id="motion.global"></script>
+
+
+
+  <script type="text/javascript" src="/js/search-toggle.js"></script>
+
+
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.4" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+          var self = this;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      $(indicator).velocity('stop').velocity({
+        opacity: action === 'show' ? 0.4 : 0
+      }, { duration: 100 });
+    }
+
+  });
+</script>
+
+
+  <script type="text/javascript" id="sidebar.nav">
+    $(document).ready(function () {
+      var html = $('html');
+
+      $('.sidebar-nav li').on('click', function () {
+        var item = $(this);
+        var activeTabClassName = 'sidebar-nav-active';
+        var activePanelClassName = 'sidebar-panel-active';
+        if (item.hasClass(activeTabClassName)) {
+          return;
+        }
+
+        var currentTarget = $('.' + activePanelClassName);
+        var target = $('.' + item.data('target'));
+
+        currentTarget.velocity('transition.slideUpOut', 200, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', 200)
+            .addClass(activePanelClassName);
+        });
+
+        item.siblings().removeClass(activeTabClassName);
+        item.addClass(activeTabClassName);
+      });
+
+      $('.post-toc a').on('click', function (e) {
+        e.preventDefault();
+        var offset = $(escapeSelector(this.getAttribute('href'))).offset().top;
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        });
+      });
+
+      // Expand sidebar on post detail page by default, when post has a toc.
+      var $tocContent = $('.post-toc-content');
+      if (isDesktop() && CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    });
+  </script>
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        if (CONFIG.sidebar === 'always') {
+            displaySidebar();
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
+<!-- lazyload -->
+<script type="text/javascript" src="/js/lazyload.js"></script>
+<script type="text/javascript">
+    jQuery(function () {
+        jQuery("#posts img").lazyload({
+            placeholder: "/images/loading.gif",
+            effect: "fadeIn"
+        });
+    });
+</script>
+</body>
+</html>

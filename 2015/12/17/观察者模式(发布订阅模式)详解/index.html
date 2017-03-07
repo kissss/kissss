@@ -1,0 +1,654 @@
+<!doctype html>
+<html class="theme-next use-motion theme-next-mist">
+<head>
+    
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.4"/>
+
+
+    <meta name="description" content="kissss" />
+
+
+
+  <meta name="keywords" content="nodejs," />
+
+
+
+
+
+  <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.4" />
+
+
+<meta name="description" content="#观察者模式(发布订阅模式)
+
+发布-订阅模式又叫做观察者模式，它是定义对象一对多的依赖关系，当一个对象得到改变时，依赖他的所有对象都将得到通知。在JavaScript开发中我们一般用事件模型去代替传统的发布订阅模式。
+
+##1.现实中的发布订阅模式
+无论是在现实中还是在我们的实际开发之中应用都十分的广泛。 运用了此模式会大大方便我们的开发。
+典型的案例就是去餐馆吃饭，你点好了餐却迟迟不肯上来，这">
+<meta property="og:type" content="article">
+<meta property="og:title" content="观察者模式(发布订阅模式)详解">
+<meta property="og:url" content="http://kissss.com/2015/12/17/观察者模式(发布订阅模式)详解/index.html">
+<meta property="og:site_name" content="kissss">
+<meta property="og:description" content="#观察者模式(发布订阅模式)
+
+发布-订阅模式又叫做观察者模式，它是定义对象一对多的依赖关系，当一个对象得到改变时，依赖他的所有对象都将得到通知。在JavaScript开发中我们一般用事件模型去代替传统的发布订阅模式。
+
+##1.现实中的发布订阅模式
+无论是在现实中还是在我们的实际开发之中应用都十分的广泛。 运用了此模式会大大方便我们的开发。
+典型的案例就是去餐馆吃饭，你点好了餐却迟迟不肯上来，这">
+<meta property="og:updated_time" content="2017-03-05T04:31:52.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="观察者模式(发布订阅模式)详解">
+<meta name="twitter:description" content="#观察者模式(发布订阅模式)
+
+发布-订阅模式又叫做观察者模式，它是定义对象一对多的依赖关系，当一个对象得到改变时，依赖他的所有对象都将得到通知。在JavaScript开发中我们一般用事件模型去代替传统的发布订阅模式。
+
+##1.现实中的发布订阅模式
+无论是在现实中还是在我们的实际开发之中应用都十分的广泛。 运用了此模式会大大方便我们的开发。
+典型的案例就是去餐馆吃饭，你点好了餐却迟迟不肯上来，这">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post'
+  };
+</script>
+
+    <title> 观察者模式(发布订阅模式)详解 // kissss </title>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+<!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?e4ba34f9a1864b1c468f14f335f6123e";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+<div class="container one-column page-post-detail">
+    <div class="headband"></div>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><h1 class="site-meta">
+  <span class="logo-line-before"><i></i></span>
+  <a href="/" class="brand" rel="start">
+      <span class="logo">
+        <i class="icon-logo"></i>
+      </span>
+      <span class="site-title">kissss</span>
+  </a>
+  <span class="logo-line-after"><i></i></span>
+</h1>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon icon-home"></i> <br />
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            <i class="menu-item-icon icon-categories"></i> <br />
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            <i class="menu-item-icon icon-archives"></i> <br />
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            <i class="menu-item-icon icon-tags"></i> <br />
+            标签
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+        </div>
+    </header>
+
+    <main id="main" class="main">
+        <div class="main-inner">
+            <div id="content" class="content">
+                
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              观察者模式(发布订阅模式)详解
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2015-12-17T20:14:22+08:00" content="2015-12-17">
+            2015-12-17
+          </time>
+        </span>
+
+        
+          <span class="post-category" >
+            &nbsp; | &nbsp; 分类于
+            
+              <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a href="/categories/nodejs/" itemprop="url" rel="index"><span itemprop="name">nodejs</span></a></span>
+
+              
+              
+
+            
+          </span>
+        
+
+        
+          
+            <span class="post-comments-count">
+              &nbsp; | &nbsp;
+              <a href="/2015/12/17/观察者模式(发布订阅模式)详解/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2015/12/17/观察者模式(发布订阅模式)详解/" itemprop="commentsCount"></span>
+              </a>
+            </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>#观察者模式(发布订阅模式)</p>
+<blockquote>
+<p>发布-订阅模式又叫做观察者模式，它是定义对象一对多的依赖关系，当一个对象得到改变时，依赖他的所有对象都将得到通知。在JavaScript开发中我们一般用事件模型去代替传统的发布订阅模式。</p>
+</blockquote>
+<p>##1.现实中的发布订阅模式</p>
+<p>无论是在现实中还是在我们的实际开发之中应用都十分的广泛。 运用了此模式会大大方便我们的开发。</p>
+<p>典型的案例就是去餐馆吃饭，你点好了餐却迟迟不肯上来，这个时候你就会催服务员，过了一会餐还是没有上来，你还会继续去询问服务员。久而久之服务员也不耐烦。</p>
+<p>当然在现实中我们见到有些餐馆是采用叫号的方式， 如果餐做好了，不需要你去询问，而是去通知你餐好了，这个时候你就可以去领取了。</p>
+<p>##2.发布-订阅模式的作用</p>
+<p>刚刚那个例子就是简单的发布-订阅模式，等待就餐的食客是订阅者，餐馆是发布者，当饭做好以后便会通知订阅者， 你点的餐已经做好了。这个模式有显而易见的优点：</p>
+<ul>
+<li>订餐者不需要时刻去询问餐馆饭菜是否做好。餐馆做好之后会通知 订阅了 饭已经做好了 的事件。</li>
+<li>餐馆和时刻之间不需要强耦合在一起，只要饭做好了会根据 订餐者在餐馆留下的联系方式 通知订餐者即可。不管订餐者是否发生变化，只要按照约定的联系方式通知订餐者即可。</li>
+</ul>
+<p>##3.自定义事件</p>
+<p>让我们来一步步实现这个发布-订阅模式</p>
+<ul>
+<li>首先需要一个发布者(餐馆)</li>
+<li>然后餐馆需要有一个记录的列表,记录哪些人订了哪些饭</li>
+<li>当饭做好以后去根据列表里面的信息通知订阅者</li>
+</ul>
+<p>另外我们也可以往通知信息里面放些额外的信息，比如这个菜的咸淡如何，辣味如何。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> restaurant = &#123;&#125;;</div><div class="line"></div><div class="line">restaurant.notificationList = [];</div><div class="line"></div><div class="line">restaurant.listen = <span class="function"><span class="keyword">function</span>(<span class="params">fn</span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.notificationList.push(fn)</div><div class="line">&#125;</div><div class="line"></div><div class="line">restaurant.target = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, fn; fn = <span class="keyword">this</span>.notificationList[i++];) &#123;</div><div class="line">        fn.apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">restaurant.listen(<span class="function"><span class="keyword">function</span>(<span class="params">food</span>) </span>&#123;   <span class="comment">//表示小明订阅了餐馆的消息</span></div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'小明的饭已经做好了 %s'</span>, food);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">restaurant.target(<span class="string">'麻婆豆腐'</span>);</div><div class="line"></div><div class="line"><span class="comment">//输出: 小明的饭已经做好了 麻婆豆腐</span></div></pre></td></tr></table></figure>
+<p>上面的代码就是我们实现最简单的观察者模式。这里面也存在着一些问题，不知道你们看出来没有，上面那段代码只能发布 麻婆豆腐做好的信息，肯定还会有别的人订了别的菜，那怎么办呢？ 所以我们在代码种稍微修改一下，增加一个key，表示只接收这一个信息。修改后的代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> restaurant = &#123;&#125;;</div><div class="line"></div><div class="line">restaurant.notificationList = [];</div><div class="line"></div><div class="line">restaurant.listen = <span class="function"><span class="keyword">function</span>(<span class="params">key, fn</span>) </span>&#123;</div><div class="line">    <span class="keyword">if</span> (!<span class="keyword">this</span>.notificationList[key]) &#123;</div><div class="line">        <span class="keyword">this</span>.notificationList[key] = [];</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">this</span>.notificationList[key].push(fn);</div><div class="line">&#125;</div><div class="line"></div><div class="line">restaurant.target = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> key = <span class="built_in">Array</span>.prototype.shift.call(<span class="built_in">arguments</span>);</div><div class="line">    <span class="keyword">var</span> fns = <span class="keyword">this</span>.notificationList[key];</div><div class="line">    <span class="keyword">if</span> (!fns || fns.length === <span class="number">0</span>) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="literal">false</span>; <span class="comment">//表示这个列表种没有订阅者</span></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, fn; fn = fns[i++];) &#123;</div><div class="line">        fn.apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">restaurant.listen(<span class="string">'doufu'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">food</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'小明的饭已经做好了 %s'</span>, food);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">restaurant.listen(<span class="string">'mifan'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">food</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'小红 的饭已经做好了 %s'</span>, food);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">restaurant.target(<span class="string">'doufu'</span>, <span class="string">'麻婆豆腐'</span>);</div><div class="line">restaurant.target(<span class="string">'mifan'</span>, <span class="string">'米饭'</span>);</div><div class="line"></div><div class="line"><span class="comment">//输出: 小明的饭已经做好了 麻婆豆腐</span></div><div class="line"><span class="comment">//     小红 的饭已经做好了 米饭</span></div></pre></td></tr></table></figure>
+<p>上面的代码很明显有个好处就是。订阅者只需要订阅自己感兴趣的事件就可以了。</p>
+<h2 id="4-发布-订阅模式通用实现"><a href="#4-发布-订阅模式通用实现" class="headerlink" title="4.发布-订阅模式通用实现"></a>4.发布-订阅模式通用实现</h2><p>这个时候如果小明去了另外一家餐馆吃饭，是否上面的对象还得重写一次呢，有没有办法让上面的对象通用呢？<br>答案显然是肯定的。这样我们把上面对象的主要功能给提取出来放到单独的一个对象里：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> event = &#123;</div><div class="line">    <span class="attr">notificationList</span>: [],</div><div class="line">    <span class="attr">listen</span>: <span class="function"><span class="keyword">function</span>(<span class="params">key, fn</span>) </span>&#123;</div><div class="line">        <span class="keyword">if</span> (!<span class="keyword">this</span>.notificationList[key]) &#123;</div><div class="line">            <span class="keyword">this</span>.notificationList[key] = [];</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">this</span>.notificationList[key].push(fn);</div><div class="line">    &#125;,</div><div class="line">    <span class="attr">target</span>: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">var</span> key = <span class="built_in">Array</span>.prototype.shift.call(<span class="built_in">arguments</span>);</div><div class="line">        <span class="keyword">var</span> fns = <span class="keyword">this</span>.notificationList[key];</div><div class="line">        <span class="keyword">if</span> (!fns || fns.length === <span class="number">0</span>) &#123;</div><div class="line">            <span class="keyword">return</span> <span class="literal">false</span>; <span class="comment">//表示这个列表种没有订阅者</span></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, fn; fn = fns[i++];) &#123;</div><div class="line">            fn.apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>接下来提供一个installEvent函数,这个函数主要给所有对象都安装一个 发布-订阅的功能.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> installEvent = <span class="function"><span class="keyword">function</span>(<span class="params">obj</span>) </span>&#123;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i <span class="keyword">in</span> event) &#123;</div><div class="line">        obj[i] = event[i]</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>接下来我们来测试一下</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> otherRestaurant = &#123;&#125;;</div><div class="line"></div><div class="line">installEvent(otherRestaurant);</div><div class="line"></div><div class="line">otherRestaurant.listen(<span class="string">'mifan'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">food</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'小红 的饭已经做好了 %s'</span>, food);</div><div class="line">&#125;)</div><div class="line"></div><div class="line">otherRestaurant.target(<span class="string">'mifan'</span>, <span class="string">'扬州炒饭'</span>);</div><div class="line"><span class="comment">//输出: 小红 的饭已经做好了 扬州炒饭</span></div></pre></td></tr></table></figure>
+<p>##5.取消订阅事件</p>
+<p>如果这个时候订餐者不需要这个饭了，为了避免再收到通知,我们需要给这个event对象添加一个删除功能。方法如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">event.remove = <span class="function"><span class="keyword">function</span>(<span class="params">key, fn</span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> fns = <span class="keyword">this</span>.notificationList[key];</div><div class="line">    <span class="keyword">if</span> (!fns || fns.length === <span class="number">0</span>) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="literal">true</span>;<span class="comment">//表示列表中并没有</span></div><div class="line">    &#125;</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; fns.length; i++) &#123;</div><div class="line">        <span class="keyword">if</span> (fns[i] === fn) &#123;</div><div class="line">            fns.splice(i, <span class="number">1</span>);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">var</span> otherRestaurant = &#123;&#125;;</div><div class="line"></div><div class="line">installEvent(otherRestaurant);</div><div class="line"></div><div class="line">otherRestaurant.listen(<span class="string">'doufu'</span>, fn1 = <span class="function"><span class="keyword">function</span>(<span class="params">food</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'小明的饭已经做好了 %s'</span>, food);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">otherRestaurant.listen(<span class="string">'mifan'</span>, fn2 = <span class="function"><span class="keyword">function</span>(<span class="params">food</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'小红 的饭已经做好了 %s'</span>, food);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">otherRestaurant.remove(<span class="string">'doufu'</span>, fn1);</div><div class="line"></div><div class="line">otherRestaurant.target(<span class="string">'doufu'</span>, <span class="string">'麻婆豆腐'</span>);</div><div class="line">otherRestaurant.target(<span class="string">'mifan'</span>, <span class="string">'米饭'</span>);</div><div class="line"></div><div class="line"><span class="comment">//输出:  小红 的饭已经做好了 米饭</span></div></pre></td></tr></table></figure>
+<h2 id="6-全局发布"><a href="#6-全局发布" class="headerlink" title="6.全局发布"></a>6.全局发布</h2><p>我们回想一下刚刚的发布订阅模式，这里还有两个小问题：</p>
+<ul>
+<li>我们给每个发布者(餐馆)逗添加了listen 和 trigger 以及一个缓存列表，这其实是一种资源的浪费。</li>
+<li>小明和餐馆还有一定的耦合性，至少需要知道餐馆的名称才能成功的订阅到该事件。</li>
+</ul>
+<p>在现实中，其实我们并不需要亲自去餐馆订餐，我们只需要把需求交给第三方软件，比如各种外卖的App，我们并不需要关心是谁家做的饭，我们只是关系能否顺利的收到饭。当然，为了保证订阅者和发布者能顺利通信，订阅者和发布者都需要知道这个中介公司。</p>
+<p>同样的程序我们用一个全局的Event对象来实现：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> Event = (<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> clientList = [];</div><div class="line">    <span class="keyword">var</span> listen = <span class="function"><span class="keyword">function</span>(<span class="params">key, fn</span>) </span>&#123;</div><div class="line">        <span class="keyword">if</span> (!clientList[key]) &#123;</div><div class="line">            clientList[key] = [];</div><div class="line">        &#125;</div><div class="line">        clientList[key].push(fn);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">var</span> target = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">var</span> key = <span class="built_in">Array</span>.prototype.shift.call(<span class="built_in">arguments</span>);</div><div class="line">        <span class="keyword">var</span> fns = clientList[key];</div><div class="line">        <span class="keyword">if</span> (!fns || fns.length === <span class="number">0</span>) &#123;</div><div class="line">            <span class="keyword">return</span> <span class="literal">false</span>; <span class="comment">//表示这个列表种没有订阅者</span></div><div class="line">        &#125;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, fn; fn = fns[i++];) &#123;</div><div class="line">            fn.apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">var</span> remove = <span class="function"><span class="keyword">function</span>(<span class="params">key, fn</span>) </span>&#123;</div><div class="line">        <span class="keyword">var</span> fns = clientList[key];</div><div class="line">        <span class="keyword">if</span> (!fns || fns.length === <span class="number">0</span>) &#123;</div><div class="line">            <span class="keyword">return</span> <span class="literal">true</span>;<span class="comment">//表示列表中并没有</span></div><div class="line">        &#125;</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; fns.length; i++) &#123;</div><div class="line">            <span class="keyword">if</span> (fns[i] === fn) &#123;</div><div class="line">                fns.splice(i, <span class="number">1</span>);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> &#123;</div><div class="line">        <span class="attr">listen</span>: listen,</div><div class="line">        <span class="attr">target</span>: target,</div><div class="line">        <span class="attr">remove</span>: remove</div><div class="line">    &#125;;</div><div class="line">&#125;)();</div><div class="line"></div><div class="line">Event.listen(<span class="string">'mifan'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">food</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'小明的饭已经做好了 %s'</span>, food);</div><div class="line">&#125;)</div><div class="line"></div><div class="line">Event.target(<span class="string">'mifan'</span>, <span class="string">'蛋炒饭'</span>);</div><div class="line"><span class="comment">//输出: 小明的饭已经做好了 蛋炒饭</span></div></pre></td></tr></table></figure>
+<hr>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> Event = (<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> global = <span class="keyword">this</span>,</div><div class="line">        Event,</div><div class="line">        _default = <span class="string">'default'</span>;</div><div class="line"></div><div class="line">    Event = (<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">var</span> _listen,</div><div class="line">            _trigger,</div><div class="line">            _remove,</div><div class="line">            _splice = <span class="built_in">Array</span>.prototype.splice,</div><div class="line">            _shift = <span class="built_in">Array</span>.prototype.shift,</div><div class="line">            _unshift = <span class="built_in">Array</span>.prototype.unshift,</div><div class="line">            namespaceCache = &#123;&#125;,</div><div class="line">            _create,</div><div class="line">            find,</div><div class="line">            each = <span class="function"><span class="keyword">function</span>(<span class="params">arr, fn</span>) </span>&#123;</div><div class="line">                <span class="keyword">var</span> ret;</div><div class="line">                <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, l = arr.length; i &lt; l; i++) &#123;</div><div class="line">                    <span class="keyword">var</span> n = arr[i];</div><div class="line">                    ret = fn.call(n, i, n);</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">return</span> ret;</div><div class="line">            &#125;;</div><div class="line">        _listen = <span class="function"><span class="keyword">function</span>(<span class="params">key, fn, cache</span>) </span>&#123;</div><div class="line">            <span class="keyword">if</span> (!cache[key]) &#123;</div><div class="line">                cache[key] = [];</div><div class="line">            &#125;</div><div class="line">            cache[key].push(fn);</div><div class="line">        &#125;;</div><div class="line">        _remove = <span class="function"><span class="keyword">function</span>(<span class="params">key, cache, fn</span>) </span>&#123;</div><div class="line">            <span class="keyword">var</span> fns = cache[key];</div><div class="line">            <span class="keyword">if</span> (fns &amp;&amp; fns.length &gt; <span class="number">0</span>) &#123;</div><div class="line">                <span class="keyword">if</span> (fn) &#123;</div><div class="line">                    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; fns.length; i++) &#123;</div><div class="line">                        <span class="keyword">if</span> (fn === fns[i]) &#123;</div><div class="line">                            fns.splice(i, <span class="number">1</span>);</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125; <span class="keyword">else</span> &#123;</div><div class="line">                    cache[key] = [];</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;;</div><div class="line">        _trigger = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">            <span class="keyword">var</span> cache = _shift.call(<span class="built_in">arguments</span>),</div><div class="line">                key = _shift.call(<span class="built_in">arguments</span>),</div><div class="line">                args = <span class="built_in">arguments</span>,</div><div class="line">                _self = <span class="keyword">this</span>,</div><div class="line">                ret,</div><div class="line">                stack = cache[key];</div><div class="line">            <span class="keyword">if</span> (!stack || !stack.length) &#123;</div><div class="line">                <span class="keyword">return</span>;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">return</span> each(stack, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">                <span class="keyword">return</span> <span class="keyword">this</span>.apply(_self, args);</div><div class="line">            &#125;)</div><div class="line">        &#125;;</div><div class="line">        _create = <span class="function"><span class="keyword">function</span>(<span class="params">namespace</span>) </span>&#123;</div><div class="line">            <span class="keyword">var</span> namespace = namespace || _default;</div><div class="line">            <span class="keyword">var</span> cache = &#123;&#125;,</div><div class="line">                offlineStack = [],<span class="comment">//离线事件</span></div><div class="line">                ret = &#123;</div><div class="line">                    <span class="attr">listen</span>: <span class="function"><span class="keyword">function</span>(<span class="params">key, fn, last</span>) </span>&#123;</div><div class="line">                        _listen(key, fn, cache);</div><div class="line">                        <span class="keyword">if</span> (offlineStack === <span class="literal">null</span>) &#123;</div><div class="line">                            <span class="keyword">return</span>;</div><div class="line">                        &#125;</div><div class="line">                        <span class="keyword">if</span> (last === <span class="string">'last'</span>) &#123;</div><div class="line">                            offlineStack.length &amp;&amp; offlineStack.pop()();</div><div class="line">                        &#125; <span class="keyword">else</span> &#123;</div><div class="line">                            each(offlineStack, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">                                <span class="keyword">this</span>();</div><div class="line">                            &#125;)</div><div class="line">                        &#125;</div><div class="line">                        offlineStack = <span class="literal">null</span>;</div><div class="line">                    &#125;,</div><div class="line">                    <span class="attr">one</span>: <span class="function"><span class="keyword">function</span>(<span class="params">key, fn, last</span>) </span>&#123;</div><div class="line">                        _remove(key, cache)</div><div class="line">                        <span class="keyword">this</span>.listen(key, fn, last);</div><div class="line">                    &#125;,</div><div class="line">                    <span class="attr">remove</span>: <span class="function"><span class="keyword">function</span>(<span class="params">key, fn</span>) </span>&#123;</div><div class="line">                        _remove(key, cache, fn);</div><div class="line">                    &#125;,</div><div class="line">                    <span class="attr">trigger</span>: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">                        <span class="keyword">var</span> fn,</div><div class="line">                            args,</div><div class="line">                            _self = <span class="keyword">this</span>;</div><div class="line">                        _unshift.call(<span class="built_in">arguments</span>, cache);</div><div class="line">                        args = <span class="built_in">arguments</span>;</div><div class="line"></div><div class="line">                        fn = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">                            <span class="keyword">return</span> _trigger.apply(_self, args)</div><div class="line">                        &#125;;</div><div class="line">                        <span class="keyword">if</span> (offlineStack) &#123;</div><div class="line">                            <span class="keyword">return</span> offlineStack.push(fn);</div><div class="line">                        &#125;</div><div class="line">                        <span class="keyword">return</span> fn();</div><div class="line">                    &#125;</div><div class="line">                &#125;;</div><div class="line">            <span class="keyword">return</span> namespace ? (namespaceCache[namespace] ? namespaceCache[namespace] : namespaceCache[namespace] = ret) : ret;</div><div class="line">        &#125;;</div><div class="line">        <span class="keyword">return</span> &#123;</div><div class="line">            <span class="attr">create</span>: _create,</div><div class="line">            <span class="attr">one</span>: <span class="function"><span class="keyword">function</span>(<span class="params">key, fn, last</span>) </span>&#123;</div><div class="line">                <span class="keyword">var</span> event = <span class="keyword">this</span>.create();</div><div class="line">                event.one(key, fn, last);</div><div class="line">            &#125;,</div><div class="line">            <span class="attr">remove</span>: <span class="function"><span class="keyword">function</span>(<span class="params">key, fn</span>) </span>&#123;</div><div class="line">                <span class="keyword">var</span> event = <span class="keyword">this</span>.create();</div><div class="line">                event.remove(key, fn);</div><div class="line">            &#125;,</div><div class="line">            <span class="attr">listen</span>: <span class="function"><span class="keyword">function</span>(<span class="params">key, fn, last</span>) </span>&#123;</div><div class="line">                <span class="keyword">var</span> event = <span class="keyword">this</span>.create();</div><div class="line">                event.listen(key, fn, last);</div><div class="line">            &#125;,</div><div class="line">            <span class="attr">trigger</span>: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">                <span class="keyword">var</span> event = <span class="keyword">this</span>.create();</div><div class="line">                event.trigger.apply(<span class="keyword">this</span>, <span class="built_in">arguments</span>);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;)();</div><div class="line">    <span class="keyword">return</span> Event;</div><div class="line">&#125;)();</div><div class="line"></div><div class="line">Event.listen(<span class="string">'123'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">obj</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'1'</span>, obj);</div><div class="line">&#125;)</div><div class="line">Event.listen(<span class="string">'123'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">obj</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'2'</span>, obj);</div><div class="line">&#125;)</div><div class="line">Event.trigger(<span class="string">'123'</span>, <span class="string">'123'</span>);</div></pre></td></tr></table></figure></span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/nodejs/" rel="tag">#nodejs</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/01/05/代理模式详解/" rel="prev">代理模式详解</a>
+            
+          </div>
+
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/08/15/MongoDB 聚合/" rel="next">MongoDB 聚合</a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+            </div>
+
+            
+
+            
+              <div class="comments" id="comments">
+                
+                  <div class="ds-thread" data-thread-key="2015/12/17/观察者模式(发布订阅模式)详解/"
+                       data-title="观察者模式(发布订阅模式)详解" data-url="http://kissss.com/2015/12/17/观察者模式(发布订阅模式)详解/">
+                  </div>
+                
+              </div>
+            
+        </div>
+
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/uploads/myicon.png" alt="kissss" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">kissss</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">kissss</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-发布-订阅模式通用实现"><span class="nav-number">1.</span> <span class="nav-text">4.发布-订阅模式通用实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-全局发布"><span class="nav-number">2.</span> <span class="nav-text">6.全局发布</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+    </main>
+
+    <footer id="footer" class="footer">
+        <div class="footer-inner">
+            <div class="copyright" >
+  
+  &copy; &nbsp;  2013 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kissss</span>
+</div>
+
+
+
+
+        </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+</div>
+
+<script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"kissss"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+    
+  
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.4"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.4"></script>
+  
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/js/motion_global.js?v=0.4.4" id="motion.global"></script>
+
+
+
+  <script type="text/javascript" src="/js/search-toggle.js"></script>
+
+
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.4" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+          var self = this;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      $(indicator).velocity('stop').velocity({
+        opacity: action === 'show' ? 0.4 : 0
+      }, { duration: 100 });
+    }
+
+  });
+</script>
+
+
+  <script type="text/javascript" id="sidebar.nav">
+    $(document).ready(function () {
+      var html = $('html');
+
+      $('.sidebar-nav li').on('click', function () {
+        var item = $(this);
+        var activeTabClassName = 'sidebar-nav-active';
+        var activePanelClassName = 'sidebar-panel-active';
+        if (item.hasClass(activeTabClassName)) {
+          return;
+        }
+
+        var currentTarget = $('.' + activePanelClassName);
+        var target = $('.' + item.data('target'));
+
+        currentTarget.velocity('transition.slideUpOut', 200, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', 200)
+            .addClass(activePanelClassName);
+        });
+
+        item.siblings().removeClass(activeTabClassName);
+        item.addClass(activeTabClassName);
+      });
+
+      $('.post-toc a').on('click', function (e) {
+        e.preventDefault();
+        var offset = $(escapeSelector(this.getAttribute('href'))).offset().top;
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        });
+      });
+
+      // Expand sidebar on post detail page by default, when post has a toc.
+      var $tocContent = $('.post-toc-content');
+      if (isDesktop() && CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    });
+  </script>
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        if (CONFIG.sidebar === 'always') {
+            displaySidebar();
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
+<!-- lazyload -->
+<script type="text/javascript" src="/js/lazyload.js"></script>
+<script type="text/javascript">
+    jQuery(function () {
+        jQuery("#posts img").lazyload({
+            placeholder: "/images/loading.gif",
+            effect: "fadeIn"
+        });
+    });
+</script>
+</body>
+</html>

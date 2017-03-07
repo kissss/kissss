@@ -1,0 +1,736 @@
+<!doctype html>
+<html class="theme-next use-motion theme-next-mist">
+<head>
+    
+
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+  <link rel="stylesheet" type="text/css" href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5"/>
+
+
+
+
+<link rel="stylesheet" type="text/css" href="/css/main.css?v=0.4.4"/>
+
+
+    <meta name="description" content="kissss" />
+
+
+
+  <meta name="keywords" content="mqtt," />
+
+
+
+
+
+  <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.4" />
+
+
+<meta name="description" content="##MQTT介绍
+MQTT，是：
+
+轻量级的消息订阅和发布（publish/subscribe）协议
+建立在TCP/IP协议之上
+
+IoT，internet of things，物联网，MQTT在这方面应用较多。
+官方网站：http://mqtt.org/
+MQTT协议是针对如下情况设计的：
+
+M2M（Machine to Machine） communication，机器端到端通信，比如传感器之">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MQTT介绍">
+<meta property="og:url" content="http://kissss.com/2015/08/08/MQTT介绍/index.html">
+<meta property="og:site_name" content="kissss">
+<meta property="og:description" content="##MQTT介绍
+MQTT，是：
+
+轻量级的消息订阅和发布（publish/subscribe）协议
+建立在TCP/IP协议之上
+
+IoT，internet of things，物联网，MQTT在这方面应用较多。
+官方网站：http://mqtt.org/
+MQTT协议是针对如下情况设计的：
+
+M2M（Machine to Machine） communication，机器端到端通信，比如传感器之">
+<meta property="og:image" content="http://kissss.com/./1437557278551.png">
+<meta property="og:image" content="http://kissss.com/./1437557298314.png">
+<meta property="og:updated_time" content="2017-03-05T04:31:52.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MQTT介绍">
+<meta name="twitter:description" content="##MQTT介绍
+MQTT，是：
+
+轻量级的消息订阅和发布（publish/subscribe）协议
+建立在TCP/IP协议之上
+
+IoT，internet of things，物联网，MQTT在这方面应用较多。
+官方网站：http://mqtt.org/
+MQTT协议是针对如下情况设计的：
+
+M2M（Machine to Machine） communication，机器端到端通信，比如传感器之">
+<meta name="twitter:image" content="http://kissss.com/./1437557278551.png">
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: 'post'
+  };
+</script>
+
+    <title> MQTT介绍 // kissss </title>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+<!--[if lte IE 8]>
+  <div style=' clear: both; height: 59px; padding:0 0 0 15px; position: relative;margin:0 auto;'>
+    <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+      <img src="http://7u2nvr.com1.z0.glb.clouddn.com/picouterie.jpg" border="0" height="42" width="820"
+           alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today or use other browser ,like chrome firefox safari."
+           style='margin-left:auto;margin-right:auto;display: block;'/>
+    </a>
+  </div>
+<![endif]-->
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?e4ba34f9a1864b1c468f14f335f6123e";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+<div class="container one-column page-post-detail">
+    <div class="headband"></div>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><h1 class="site-meta">
+  <span class="logo-line-before"><i></i></span>
+  <a href="/" class="brand" rel="start">
+      <span class="logo">
+        <i class="icon-logo"></i>
+      </span>
+      <span class="site-title">kissss</span>
+  </a>
+  <span class="logo-line-after"><i></i></span>
+</h1>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu ">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            <i class="menu-item-icon icon-home"></i> <br />
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            <i class="menu-item-icon icon-categories"></i> <br />
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            <i class="menu-item-icon icon-archives"></i> <br />
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            <i class="menu-item-icon icon-tags"></i> <br />
+            标签
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+        </div>
+    </header>
+
+    <main id="main" class="main">
+        <div class="main-inner">
+            <div id="content" class="content">
+                
+
+  <div id="posts" class="posts-expand">
+    
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      
+      
+        <h1 class="post-title" itemprop="name headline">
+          
+          
+            
+              MQTT介绍
+            
+          
+        </h1>
+      
+
+      <div class="post-meta">
+        <span class="post-time">
+          发表于
+          <time itemprop="dateCreated" datetime="2015-08-08T16:56:24+08:00" content="2015-08-08">
+            2015-08-08
+          </time>
+        </span>
+
+        
+          <span class="post-category" >
+            &nbsp; | &nbsp; 分类于
+            
+              <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a href="/categories/mqtt/" itemprop="url" rel="index"><span itemprop="name">mqtt</span></a></span>
+
+              
+              
+
+            
+          </span>
+        
+
+        
+          
+            <span class="post-comments-count">
+              &nbsp; | &nbsp;
+              <a href="/2015/08/08/MQTT介绍/#comments" itemprop="discussionUrl">
+                <span class="post-comments-count ds-thread-count" data-thread-key="2015/08/08/MQTT介绍/" itemprop="commentsCount"></span>
+              </a>
+            </span>
+          
+        
+      </div>
+    </header>
+
+    <div class="post-body">
+
+      
+      
+
+      
+        <span itemprop="articleBody"><p>##MQTT介绍</p>
+<p>MQTT，是：</p>
+<ul>
+<li>轻量级的消息订阅和发布（publish/subscribe）协议</li>
+<li>建立在TCP/IP协议之上</li>
+</ul>
+<p>IoT，internet of things，物联网，MQTT在这方面应用较多。</p>
+<p>官方网站：<a href="http://mqtt.org/" target="_blank" rel="external">http://mqtt.org/</a></p>
+<p>MQTT协议是针对如下情况设计的：</p>
+<ul>
+<li>M2M（Machine to Machine） communication，机器端到端通信，比如传感器之间的数据通讯<br>因为是Machine to Machine，需要考虑：</li>
+<li>Machine，或者叫设备，比如温度传感器，硬件能力很弱，协议要考虑尽量小的资源消耗，比如计算能力和存储等</li>
+<li>M2M可能是无线连接，网络不稳定，带宽也比较小</li>
+<li>MQTT协议的架构，用一个示例说明。比如有1个温度传感器（1个Machine），2个小的显示屏（2个Machine)，显示屏要显示温度传感器的温度值。</li>
+</ul>
+<p>可通过<a href="http://public.dhe.ibm.com/software/dw/webservices/ws-mqtt/mqtt-v3r1.html" target="_blank" rel="external">MQTT V3.1 Protocol Specification</a>查阅详细规范的细节。</p>
+<p>显示器需要先通过MQTT协议subscribe（订阅）一个比如叫<code>temperature</code>的topic（主题）：</p>
+<p><img src="./1437557278551.png" alt="Alt text"></p>
+<p>当温度传感器publish（发布）温度数据，显示器就可以收到了：</p>
+<p><img src="./1437557298314.png" alt="Alt text"></p>
+<p>协议里还有2个主要的角色：</p>
+<ul>
+<li>client，客户端</li>
+<li>broker，服务器端</li>
+</ul>
+<p>它们是通过TCP/IP协议连接的。<br>因为MQTT是协议，所以不能拿来直接用的，就好比HTTP协议一样。需要找实现这个协议的库或者服务器来运行。</p>
+<p>我服务器端使用nodejs开发，因此选择了：</p>
+<ul>
+<li><a href="https://github.com/mqttjs/MQTT.js" target="_blank" rel="external">MQTT.js</a>：MQTT协议的底层实现库，服务器端很简易，需要自己编写代码才可使用</li>
+<li><a href="https://github.com/mcollina/mosca" target="_blank" rel="external">Mosca</a>：在MQTT.js基础上完善的服务器端</li>
+</ul>
+<p>##MQTT.js最基本使用</p>
+<p>安装是很简单的：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install mqtt</div></pre></td></tr></table></figure>
+<p>###MQTT.js实现的服务器端</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> mqtt = <span class="built_in">require</span>(<span class="string">'mqtt'</span>);</div><div class="line"></div><div class="line"><span class="comment">//&#123;'topicName':[clientObj,clientObj ..]&#125;</span></div><div class="line"><span class="keyword">var</span> subscribeTopics=&#123;&#125;;</div><div class="line"></div><div class="line"><span class="comment">//创建服务器对象</span></div><div class="line"><span class="keyword">var</span> server = mqtt.createServer(<span class="function"><span class="keyword">function</span>(<span class="params">client</span>) </span>&#123;</div><div class="line"></div><div class="line">  <span class="comment">//建立连接时触发</span></div><div class="line">  client.on(<span class="string">'connect'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">packet</span>) </span>&#123;</div><div class="line">    client.connack(&#123;<span class="attr">returnCode</span>: <span class="number">0</span>&#125;);</div><div class="line">  &#125;);</div><div class="line"></div><div class="line">  <span class="comment">//客户端发布主题时触发</span></div><div class="line">  client.on(<span class="string">'publish'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">packet</span>) </span>&#123;</div><div class="line">  	<span class="keyword">var</span> topic=packet.topic;</div><div class="line">  	<span class="keyword">var</span> payload=packet.payload;</div><div class="line"></div><div class="line">  	<span class="comment">//如果没有创建空的主题对应的client数组</span></div><div class="line">  	<span class="keyword">if</span>(subscribeTopics[topic]==<span class="literal">null</span>)&#123;</div><div class="line">  		subscribeTopics[topic]=[];</div><div class="line">  	&#125;<span class="keyword">else</span>&#123;</div><div class="line">  		<span class="comment">//遍历该主题下全部client，并逐一发送消息</span></div><div class="line">  		<span class="keyword">for</span>(<span class="keyword">var</span> i <span class="keyword">in</span> subscribeTopics[topic])&#123;</div><div class="line">  			<span class="keyword">var</span> client=subscribeTopics[topic][i];</div><div class="line">  			client.publish(&#123;</div><div class="line">  				<span class="attr">topic</span>: topic,</div><div class="line">  				<span class="attr">payload</span>: payload</div><div class="line">  			&#125;);</div><div class="line">  		&#125;</div><div class="line">  	&#125;</div><div class="line">  &#125;);</div><div class="line"></div><div class="line">  <span class="comment">//当客户端订阅时触发</span></div><div class="line">  client.on(<span class="string">'subscribe'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">packet</span>) </span>&#123;</div><div class="line">  	<span class="keyword">var</span> topic=packet.subscriptions[<span class="number">0</span>].topic;</div><div class="line"></div><div class="line">  	<span class="comment">//如没有，创建空的主题对应的client数组</span></div><div class="line">  	<span class="keyword">if</span>(subscribeTopics[topic]==<span class="literal">null</span>)&#123;</div><div class="line">  		subscribeTopics[topic]=[];</div><div class="line">  	&#125;</div><div class="line"></div><div class="line">  	<span class="comment">//如果client数组中没有当前client，加入</span></div><div class="line">	<span class="keyword">if</span>(subscribeTopics[topic].indexOf(client)==<span class="number">-1</span>)&#123;</div><div class="line">		subscribeTopics[topic].push(client);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">  &#125;);</div><div class="line"></div><div class="line">  client.on(<span class="string">'pingreq'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">packet</span>) </span>&#123;</div><div class="line">    client.pingresp();</div><div class="line">  &#125;);</div><div class="line"></div><div class="line">  client.on(<span class="string">'disconnect'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">packet</span>) </span>&#123;</div><div class="line">  	<span class="comment">//遍历所有主题，检查对应的数组中是否有当前client，从数组中删除</span></div><div class="line">   	<span class="keyword">for</span> (<span class="keyword">var</span> topic <span class="keyword">in</span> subscribeTopics)&#123;</div><div class="line">   		<span class="keyword">var</span> index=subscribeTopics[topic].indexOf(client);</div><div class="line">   		<span class="keyword">if</span>(index&gt;<span class="number">-1</span>)&#123;</div><div class="line">   			subscribeTopics[topic].splice(index,<span class="number">1</span>);</div><div class="line">   		&#125;</div><div class="line">   	&#125;</div><div class="line">  &#125;);</div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="comment">//监听端口</span></div><div class="line">server.listen(<span class="number">1883</span>);</div></pre></td></tr></table></figure>
+<p>这是一个最基本的服务器端，消息的存储和查询都需要自己编程处理。<br>比如你如果需要用redis保存和触发数据，具体可以参照 <a href="http://www.w3hacker.com/node-mqtt-server-redis-pubsub.html" target="_blank" rel="external">链接</a></p>
+<p>###MQTT.js实现的客户端</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> mqtt = <span class="built_in">require</span>(<span class="string">'mqtt'</span>);</div><div class="line"></div><div class="line">client = mqtt.createClient(<span class="number">1883</span>, <span class="string">'localhost'</span>);</div><div class="line"></div><div class="line">client.subscribe(<span class="string">'testMessage'</span>);</div><div class="line">client.publish(<span class="string">'testMessage'</span>, <span class="string">'发布测试信息'</span>);</div><div class="line"></div><div class="line">client.on(<span class="string">'message'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">topic, message</span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(message);</div><div class="line">  client.end();</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>写的很简易，订阅了主题，然后向相同主题发布消息，接收到消息后client停止。</p>
+<p>##使用Mosca</p>
+<hr>
+<p>MQTT.js只是实现了最基础的MQTT协议部分，对于服务器端的处理需要自己完成。</p>
+<p>有关MQTT.js是否实现了MQTT server，详细的说明，可参见<a href="https://github.com/mqttjs/MQTT.js/issues/151" target="_blank" rel="external">MQTT Server: MQTT.js or Mosca?</a></p>
+<p>正好，Mosca在MQTT基础上实现了这些，它可以：</p>
+<ul>
+<li>作为独立运行的MQTT服务器运行</li>
+<li>集成到nodejs程序里使用</li>
+</ul>
+<p>安装</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install mosca bunyan -g</div></pre></td></tr></table></figure>
+<p>###作为独立服务器运行</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mosca -v | bunyan</div></pre></td></tr></table></figure>
+<p>然后，还可以用我上文的客户端代码运行测试。</p>
+<h3 id="集成在自己程序中使用"><a href="#集成在自己程序中使用" class="headerlink" title="集成在自己程序中使用"></a>集成在自己程序中使用</h3><p>我考虑的后端持久化，是用MongoDB。Mosca另外几个选项：</p>
+<ul>
+<li>Redis，缺点是更注重作为缓存，而不适合可靠持久化</li>
+<li>LevelUp，头一次听说，不打算做技术准备了，是用nodejs的包装起来的LevelDB</li>
+<li>Memory，使用内存，估计默认的就是这个，不适合我使用的情况</li>
+</ul>
+<p>首先要安装mosca的库：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">npm install mosca</div></pre></td></tr></table></figure>
+<p>然后，在本机将mongodb运行起来，应该就可以执行下面的代码了：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> mosca = <span class="built_in">require</span>(<span class="string">'mosca'</span>)</div><div class="line"></div><div class="line"><span class="keyword">var</span> settings = &#123;</div><div class="line">  <span class="attr">port</span>: <span class="number">1883</span>,</div><div class="line">  <span class="attr">backend</span>:&#123;</div><div class="line">  	<span class="attr">type</span>: <span class="string">'mongo'</span>,</div><div class="line">  	<span class="attr">url</span>: <span class="string">'mongodb://localhost:27017/mqtt'</span>,</div><div class="line">  	<span class="attr">pubsubCollection</span>: <span class="string">'ascoltatori'</span>,</div><div class="line">  	<span class="attr">mongo</span>: &#123;&#125;</div><div class="line">  &#125;,</div><div class="line">  <span class="attr">persistence</span>:&#123;</div><div class="line">  	<span class="attr">factory</span>: mosca.persistence.Mongo,</div><div class="line">    <span class="attr">url</span>: <span class="string">"mongodb://localhost:27017/mosca"</span></div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">var</span> server = <span class="keyword">new</span> mosca.Server(settings);</div><div class="line">server.on(<span class="string">'ready'</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">	<span class="built_in">console</span>.log(<span class="string">'Mosca server is up and running'</span>);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">server.on(<span class="string">'published'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">packet, client</span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'Published'</span>, packet.payload);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>##MQTT高级问题</p>
+<p>###keepalive和PING</p>
+<p><em>心跳时间(Keep Alive timer)</em></p>
+<p>以秒为单位，定义服务器端从客户端接收消息的最大时间间隔。一般应用服务会在业务层次检测客户端网络是否连接，不是TCP/IP协议层面的心跳机制(比如开启SOCKET的SO_KEEPALIVE选项)。 一般来讲，在一个心跳间隔内，客户端发送一个PINGREQ消息到服务器，服务器返回PINGRESP消息，完成一次心跳交互，继而等待下一轮。若客户端没有收到心跳反馈，会关闭掉TCP/IP端口连接，离线。 16位两个字节，可看做一个无符号的short类型值。最大值，2^16-1 = 65535秒 = 18小时。最小值可以为0，表示客户端不断开。一般设为几分钟，比如微信心跳周期为300秒。</p>
+<p>下面的代码中我设置的是10秒：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> mqtt = <span class="built_in">require</span>(<span class="string">'mqtt'</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> settings = &#123;</div><div class="line">  <span class="attr">keepalive</span>: <span class="number">10</span>,</div><div class="line">  <span class="attr">protocolId</span>: <span class="string">'MQIsdp'</span>,</div><div class="line">  <span class="attr">protocolVersion</span>: <span class="number">3</span>,</div><div class="line">  <span class="attr">clientId</span>: <span class="string">'client-b'</span>,</div><div class="line">  <span class="attr">clean</span>: <span class="literal">false</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">client = mqtt.createClient(<span class="number">1883</span>, <span class="string">'localhost'</span>,settings);</div></pre></td></tr></table></figure>
+<p>###QoS</p>
+<p>QoS在MQTT中有（<a href="https://www.ibm.com/developerworks/cn/webservices/ws-mqtt/index.html" target="_blank" rel="external">摘自MQ 遥测传输 (MQTT) V3.1 协议规范</a>）：</p>
+<ul>
+<li>“至多一次”，消息发布完全依赖底层 TCP/IP 网络。会发生消息丢失或重复。这一级别可用于如下情况，环境传感器数据，丢失一次读记录无所谓，因为不久后还会有第二次发送。</li>
+<li>“至少一次”，确保消息到达，但消息重复可能会发生。</li>
+<li>“只有一次”，确保消息到达一次。这一级别可用于如下情况，在计费系统中，消息重复或丢失会导致不正确的结果。</li>
+</ul>
+<p>MQTT.js只是支持了MQTT协议，并没有支持QoS，也就是说，只支持最低级别的“至多一次”（QoS0）。<br>Mosca支持QoS0和1，但不支持2，见<a href="https://github.com/mcollina/mosca/issues/115" target="_blank" rel="external">Add support QOS 2</a></p>
+<p>###接收离线消息</p>
+<p>我在应用中的一个主要场景是，使用MQTT.js+Mosca做聊天服务器。<br>默认Mosca是不支持离线消息的，表现的现象是，如果是有人（client-a）先在主题上发布了消息：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> mqtt = <span class="built_in">require</span>(<span class="string">'mqtt'</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> settings = &#123;</div><div class="line">  <span class="attr">keepalive</span>: <span class="number">10</span>,</div><div class="line">  <span class="attr">protocolId</span>: <span class="string">'MQIsdp'</span>,</div><div class="line">  <span class="attr">protocolVersion</span>: <span class="number">3</span>,</div><div class="line">  <span class="attr">clientId</span>: <span class="string">'client-a'</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">client = mqtt.createClient(<span class="number">1883</span>, <span class="string">'localhost'</span>,settings);</div><div class="line"></div><div class="line">client.publish(<span class="string">'testMessage'</span>, <span class="string">'发布new测试信息0'</span>,&#123;<span class="attr">qos</span>:<span class="number">1</span>,<span class="attr">retain</span>: <span class="literal">true</span>&#125;);</div><div class="line">client.publish(<span class="string">'testMessage'</span>, <span class="string">'发布new测试信息1'</span>,&#123;<span class="attr">qos</span>:<span class="number">1</span>,<span class="attr">retain</span>: <span class="literal">true</span>&#125;);</div><div class="line">client.publish(<span class="string">'testMessage'</span>, <span class="string">'发布new测试信息2'</span>,&#123;<span class="attr">qos</span>:<span class="number">1</span>,<span class="attr">retain</span>: <span class="literal">true</span>&#125;);</div><div class="line">client.publish(<span class="string">'testMessage'</span>, <span class="string">'发布new测试信息3'</span>,&#123;<span class="attr">qos</span>:<span class="number">1</span>,<span class="attr">retain</span>: <span class="literal">true</span>&#125;);</div><div class="line"></div><div class="line">setTimeout(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">  client.end();</div><div class="line">&#125;,<span class="number">1000</span>);</div></pre></td></tr></table></figure>
+<p>那么另外一个人（client-b），随后订阅，仅能看到最后一条消息：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> mqtt = <span class="built_in">require</span>(<span class="string">'mqtt'</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> settings = &#123;</div><div class="line">  <span class="attr">keepalive</span>: <span class="number">10</span>,</div><div class="line">  <span class="attr">protocolId</span>: <span class="string">'MQIsdp'</span>,</div><div class="line">  <span class="attr">protocolVersion</span>: <span class="number">3</span>,</div><div class="line">  <span class="attr">clientId</span>: <span class="string">'client-b'</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">client = mqtt.createClient(<span class="number">1883</span>, <span class="string">'localhost'</span>,settings);</div><div class="line"></div><div class="line">client.subscribe(<span class="string">'testMessage'</span>,&#123;<span class="attr">qos</span>:<span class="number">1</span>&#125;,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'subscribe ok.'</span>);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">client.on(<span class="string">"message"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">topic, payload</span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'message: '</span>+payload);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>运行结果类似这样：<br>subscribe ok.<br>message: 发布new测试信息3<br>离线消息，需要以下几点：</p>
+<ul>
+<li>客户端订阅设置QoS=1</li>
+<li>客户端连接属性<code>clean: false</code>，作用是断开连接重连的时候服务器端帮助恢复session，不需要再次订阅</li>
+</ul>
+<p>用代码说明以下，先运行这段代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> mqtt = <span class="built_in">require</span>(<span class="string">'mqtt'</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> settings = &#123;</div><div class="line">  <span class="attr">keepalive</span>: <span class="number">10</span>,</div><div class="line">  <span class="attr">protocolId</span>: <span class="string">'MQIsdp'</span>,</div><div class="line">  <span class="attr">protocolVersion</span>: <span class="number">3</span>,</div><div class="line">  <span class="attr">clientId</span>: <span class="string">'client-b'</span>,</div><div class="line">  <span class="attr">clean</span>: <span class="literal">false</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">client = mqtt.createClient(<span class="number">1883</span>, <span class="string">'localhost'</span>,settings);</div><div class="line"></div><div class="line">client.subscribe(<span class="string">'testMessage'</span>,&#123;<span class="attr">qos</span>:<span class="number">1</span>&#125;,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'subscribe ok.'</span>);</div><div class="line">  client.end();</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>然后执行刚才发布多条消息的代码。再执行下面的代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> mqtt = <span class="built_in">require</span>(<span class="string">'mqtt'</span>);</div><div class="line"></div><div class="line"><span class="keyword">var</span> settings = &#123;</div><div class="line">  <span class="attr">keepalive</span>: <span class="number">10</span>,</div><div class="line">  <span class="attr">protocolId</span>: <span class="string">'MQIsdp'</span>,</div><div class="line">  <span class="attr">protocolVersion</span>: <span class="number">3</span>,</div><div class="line">  <span class="attr">clientId</span>: <span class="string">'client-b'</span>,</div><div class="line">  <span class="attr">clean</span>: <span class="literal">false</span></div><div class="line">&#125;</div><div class="line"></div><div class="line">client = mqtt.createClient(<span class="number">1883</span>, <span class="string">'localhost'</span>,settings);</div><div class="line"></div><div class="line">client.on(<span class="string">"message"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">topic, payload</span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'message: '</span>+payload);</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>运行结果类似这样：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">message: 发布<span class="keyword">new</span>测试信息<span class="number">1</span></div><div class="line">message: 发布<span class="keyword">new</span>测试信息<span class="number">3</span></div><div class="line">message: 发布<span class="keyword">new</span>测试信息<span class="number">2</span></div><div class="line">message: 发布<span class="keyword">new</span>测试信息<span class="number">0</span></div></pre></td></tr></table></figure>
+<p>收到消息的顺序是乱的，为什么会这样，其实很好理解，为了小型受限设备以及网络不稳定的情况，消息是不好保证顺序的。<br>解决办法是发送的消息带时间戳，接收后再做排序。<br>另外，担心客户端没有做<code>client.end()</code>而非正常退出，那么再次连接是否能恢复session，测试了一下，注释<code>client.end()</code>，没有问题，正常收到多条离线消息。</p>
+<p>###SSL连接</p>
+<p>Mosca支持SSL连接，可根据<a href="http://nodejs.org/api/tls.html#tls_tls_ssl" target="_blank" rel="external">Nodejs TLS</a>创建公钥私钥。<br>然后类似这样启动：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> mosca = <span class="built_in">require</span>(<span class="string">'mosca'</span>)</div><div class="line"></div><div class="line"><span class="keyword">var</span> SECURE_KEY = __dirname + <span class="string">'/../../test/secure/tls-key.pem'</span>;</div><div class="line"><span class="keyword">var</span> SECURE_CERT = __dirname + <span class="string">'/../../test/secure/tls-cert.pem'</span>;</div><div class="line"></div><div class="line"><span class="keyword">var</span> settings = &#123;</div><div class="line">  <span class="attr">port</span>: <span class="number">8443</span>,</div><div class="line">  <span class="attr">logger</span>: &#123;</div><div class="line">    <span class="attr">name</span>: <span class="string">"secureExample"</span>,</div><div class="line">    <span class="attr">level</span>: <span class="number">40</span>,</div><div class="line">  &#125;,</div><div class="line">  <span class="attr">secure</span> : &#123;</div><div class="line">    <span class="attr">keyPath</span>: SECURE_KEY,</div><div class="line">    <span class="attr">certPath</span>: SECURE_CERT,</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line"><span class="keyword">var</span> server = <span class="keyword">new</span> mosca.Server(settings);</div><div class="line">server.on(<span class="string">'ready'</span>, setup);</div><div class="line"></div><div class="line"><span class="comment">// fired when the mqtt server is ready</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">setup</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'Mosca server is up and running'</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这部分我没有测试，直接转自<a href="https://github.com/mcollina/mosca#encryption-support" target="_blank" rel="external">Mosca Encryption Support</a>。</p>
+<p>###认证和授权</p>
+<p>在<a href="https://github.com/mcollina/mosca/#authorization" target="_blank" rel="external">Mosca Authentication</a>提供了个简易的命令行，可创建账号用于认证并授权。<br>但是它不适合我的需求场景，我需要自己编写认证和授权的逻辑。<br>虽然在作者官方网站上未找到，但在问题管理记录中提交了这方面的支持：<a href="https://github.com/mcollina/mosca/issues/20" target="_blank" rel="external">Authentication &amp; Authorization</a>。<br>有下面两条支持，应该可以写出自己的回调，并集成到Mosca中：</p>
+<ul>
+<li>add a callback to authorize a publish.</li>
+<li>add a callback to authorize a subscribe.</li>
+</ul>
+<p>不过这块没有写代码，只是大致能确定。</p>
+<p>###性能问题</p>
+<p>MQTT.js并不是完整解决方案，不需要考虑它的性能问题。<br>说一下Mosca，有一个这方面问题作者的答复，<a href="https://github.com/mcollina/mosca/issues/119" target="_blank" rel="external">what about mosca’s performance</a>，问问题的还是个中国人，我前面还引用了他的文章。作者基本意思是：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">It basically depends on the RAM. On an AWS large instance it can reach</div><div class="line"><span class="number">10</span>k concurrent connections, <span class="keyword">with</span> roughly <span class="number">10</span>k messages/second.</div></pre></td></tr></table></figure>
+<hr>
+<p>本文摘至<a href="http://blog.shiqichan.com/introducing-mqtt/" target="_blank" rel="external">shiqichan</a></p>
+</span>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/mqtt/" rel="tag">#mqtt</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/08/15/常用的Node.js设计模式/" rel="prev">常用的Node.js设计模式</a>
+            
+          </div>
+
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/08/02/MongoDB 自动增长/" rel="next">MongoDB 自动增长</a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+            </div>
+
+            
+
+            
+              <div class="comments" id="comments">
+                
+                  <div class="ds-thread" data-thread-key="2015/08/08/MQTT介绍/"
+                       data-title="MQTT介绍" data-url="http://kissss.com/2015/08/08/MQTT介绍/">
+                  </div>
+                
+              </div>
+            
+        </div>
+
+        
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" src="/uploads/myicon.png" alt="kissss" itemprop="image"/>
+          <p class="site-author-name" itemprop="name">kissss</p>
+        </div>
+        <p class="site-description motion-element" itemprop="description">kissss</p>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          <div class="site-state-item site-state-categories">
+            <a href="/categories">
+              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-name">分类</span>
+              </a>
+          </div>
+
+          <div class="site-state-item site-state-tags">
+            <a href="/tags">
+              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-name">标签</span>
+              </a>
+          </div>
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap sidebar-panel-active">
+          <div class="post-toc-indicator-top post-toc-indicator"></div>
+          <div class="post-toc">
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#集成在自己程序中使用"><span class="nav-number">1.</span> <span class="nav-text">集成在自己程序中使用</span></a></li></ol></div>
+            
+          </div>
+          <div class="post-toc-indicator-bottom post-toc-indicator"></div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+    </main>
+
+    <footer id="footer" class="footer">
+        <div class="footer-inner">
+            <div class="copyright" >
+  
+  &copy; &nbsp;  2013 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="icon-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kissss</span>
+</div>
+
+
+
+
+        </div>
+    </footer>
+
+    <div class="back-to-top"></div>
+</div>
+
+<script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  
+  
+    
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"kissss"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+    
+  
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+  <script type="text/javascript" src="/js/fancy-box.js?v=0.4.4"></script>
+
+
+  <script type="text/javascript" src="/js/helpers.js?v=0.4.4"></script>
+  
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/js/motion_global.js?v=0.4.4" id="motion.global"></script>
+
+
+
+  <script type="text/javascript" src="/js/search-toggle.js"></script>
+
+
+  
+<script type="text/javascript" src="/js/bootstrap.scrollspy.js?v=0.4.4" id="bootstrap.scrollspy.custom"></script>
+
+
+<script type="text/javascript" id="sidebar.toc.highlight">
+  $(document).ready(function () {
+    var tocSelector = '.post-toc';
+    var $tocSelector = $(tocSelector);
+    var activeCurrentSelector = '.active-current';
+
+    $tocSelector
+      .on('activate.bs.scrollspy', function () {
+        var $currentActiveElement = $(tocSelector + ' .active').last();
+
+        removeCurrentActiveClass();
+        $currentActiveElement.addClass('active-current');
+
+        $tocSelector[0].scrollTop = $currentActiveElement.position().top;
+      })
+      .on('clear.bs.scrollspy', function () {
+        removeCurrentActiveClass();
+      });
+
+    function removeCurrentActiveClass () {
+      $(tocSelector + ' ' + activeCurrentSelector)
+        .removeClass(activeCurrentSelector.substring(1));
+    }
+
+    function processTOC () {
+      getTOCMaxHeight();
+      toggleTOCOverflowIndicators();
+    }
+
+    function getTOCMaxHeight () {
+      var height = $('.sidebar').height() -
+                   $tocSelector.position().top -
+                   $('.post-toc-indicator-bottom').height();
+
+      $tocSelector.css('height', height);
+
+      return height;
+    }
+
+    function toggleTOCOverflowIndicators () {
+      tocOverflowIndicator(
+        '.post-toc-indicator-top',
+        $tocSelector.scrollTop() > 0 ? 'show' : 'hide'
+      );
+
+      tocOverflowIndicator(
+        '.post-toc-indicator-bottom',
+        $tocSelector.scrollTop() >= $tocSelector.find('ol').height() - $tocSelector.height() ? 'hide' : 'show'
+      )
+    }
+
+    $(document).on('sidebar.motion.complete', function () {
+      processTOC();
+    });
+
+    $('body').scrollspy({ target: tocSelector });
+    $(window).on('resize', function () {
+      if ( $('.sidebar').hasClass('sidebar-active') ) {
+        processTOC();
+      }
+    });
+
+    onScroll($tocSelector);
+
+    function onScroll (element) {
+      element.on('mousewheel DOMMouseScroll', function (event) {
+          var oe = event.originalEvent;
+          var delta = oe.wheelDelta || -oe.detail;
+          var self = this;
+
+          this.scrollTop += ( delta < 0 ? 1 : -1 ) * 30;
+          event.preventDefault();
+
+          toggleTOCOverflowIndicators();
+      });
+    }
+
+    function tocOverflowIndicator (indicator, action) {
+      $(indicator).velocity('stop').velocity({
+        opacity: action === 'show' ? 0.4 : 0
+      }, { duration: 100 });
+    }
+
+  });
+</script>
+
+
+  <script type="text/javascript" id="sidebar.nav">
+    $(document).ready(function () {
+      var html = $('html');
+
+      $('.sidebar-nav li').on('click', function () {
+        var item = $(this);
+        var activeTabClassName = 'sidebar-nav-active';
+        var activePanelClassName = 'sidebar-panel-active';
+        if (item.hasClass(activeTabClassName)) {
+          return;
+        }
+
+        var currentTarget = $('.' + activePanelClassName);
+        var target = $('.' + item.data('target'));
+
+        currentTarget.velocity('transition.slideUpOut', 200, function () {
+          target
+            .velocity('stop')
+            .velocity('transition.slideDownIn', 200)
+            .addClass(activePanelClassName);
+        });
+
+        item.siblings().removeClass(activeTabClassName);
+        item.addClass(activeTabClassName);
+      });
+
+      $('.post-toc a').on('click', function (e) {
+        e.preventDefault();
+        var offset = $(escapeSelector(this.getAttribute('href'))).offset().top;
+        html.velocity('stop').velocity('scroll', {
+          offset: offset  + 'px',
+          mobileHA: false
+        });
+      });
+
+      // Expand sidebar on post detail page by default, when post has a toc.
+      var $tocContent = $('.post-toc-content');
+      if (isDesktop() && CONFIG.sidebar === 'post') {
+        if ($tocContent.length > 0 && $tocContent.html().trim().length > 0) {
+          displaySidebar();
+        }
+      }
+    });
+  </script>
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        if (CONFIG.sidebar === 'always') {
+            displaySidebar();
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
+<!-- lazyload -->
+<script type="text/javascript" src="/js/lazyload.js"></script>
+<script type="text/javascript">
+    jQuery(function () {
+        jQuery("#posts img").lazyload({
+            placeholder: "/images/loading.gif",
+            effect: "fadeIn"
+        });
+    });
+</script>
+</body>
+</html>
