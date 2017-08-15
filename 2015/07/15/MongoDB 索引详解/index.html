@@ -37,22 +37,18 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.4" />
 
 
-<meta name="description" content="大家先看这样一篇文章,转自 cnode @DoubleSpout
-##mongodb索引最近碰到这样的一个需求，一张酒店政策优惠表，我们要根据用户入住和离开的时间，计算一家酒店的最低价政策前10位，数据库表字段如下：
-1234567&apos;hid&apos;:88,     酒店id&apos;date&apos;:20150530,  入住日期整形(不要纠结unix时间戳)&apos;enable&apos;:1,  政策是否启用&apos;price&apos;:10">
+<meta name="description" content="大家先看这样一篇文章,转自 cnode @DoubleSpout ##mongodb索引最近碰到这样的一个需求，一张酒店政策优惠表，我们要根据用户入住和离开的时间，计算一家酒店的最低价政策前10位，数据库表字段如下： 1234567&apos;hid&apos;:88,     酒店id&apos;date&apos;:20150530,  入住日期整形(不要纠结unix时间戳)&apos;enable&apos;:1,  政策是否启用&apos;price&apos;:10">
+<meta name="keywords" content="数据库,mongodb">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MongoDB 索引详解">
 <meta property="og:url" content="http://kissss.com/2015/07/15/MongoDB 索引详解/index.html">
 <meta property="og:site_name" content="kissss">
-<meta property="og:description" content="大家先看这样一篇文章,转自 cnode @DoubleSpout
-##mongodb索引最近碰到这样的一个需求，一张酒店政策优惠表，我们要根据用户入住和离开的时间，计算一家酒店的最低价政策前10位，数据库表字段如下：
-1234567&apos;hid&apos;:88,     酒店id&apos;date&apos;:20150530,  入住日期整形(不要纠结unix时间戳)&apos;enable&apos;:1,  政策是否启用&apos;price&apos;:10">
-<meta property="og:updated_time" content="2015-09-02T02:43:34.000Z">
+<meta property="og:description" content="大家先看这样一篇文章,转自 cnode @DoubleSpout ##mongodb索引最近碰到这样的一个需求，一张酒店政策优惠表，我们要根据用户入住和离开的时间，计算一家酒店的最低价政策前10位，数据库表字段如下： 1234567&apos;hid&apos;:88,     酒店id&apos;date&apos;:20150530,  入住日期整形(不要纠结unix时间戳)&apos;enable&apos;:1,  政策是否启用&apos;price&apos;:10">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-03-05T04:31:52.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MongoDB 索引详解">
-<meta name="twitter:description" content="大家先看这样一篇文章,转自 cnode @DoubleSpout
-##mongodb索引最近碰到这样的一个需求，一张酒店政策优惠表，我们要根据用户入住和离开的时间，计算一家酒店的最低价政策前10位，数据库表字段如下：
-1234567&apos;hid&apos;:88,     酒店id&apos;date&apos;:20150530,  入住日期整形(不要纠结unix时间戳)&apos;enable&apos;:1,  政策是否启用&apos;price&apos;:10">
+<meta name="twitter:description" content="大家先看这样一篇文章,转自 cnode @DoubleSpout ##mongodb索引最近碰到这样的一个需求，一张酒店政策优惠表，我们要根据用户入住和离开的时间，计算一家酒店的最低价政策前10位，数据库表字段如下： 1234567&apos;hid&apos;:88,     酒店id&apos;date&apos;:20150530,  入住日期整形(不要纠结unix时间戳)&apos;enable&apos;:1,  政策是否启用&apos;price&apos;:10">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -270,20 +266,20 @@
 <hr>
 <p>由此可见，建立合适程序的索引都多么重要，下面推荐一款分析mongodb.log ,自动化简历索引的工具 <a href="https://github.com/mongolab/dex" target="_blank" rel="external">dex</a></p>
 <h2 id="dex"><a href="#dex" class="headerlink" title="dex"></a>dex</h2><p>因为使用Python写的，所以需要安装pip工具，类似pip类似RedHat里面的yum，安装软件非常方便。如果已经安装了，可以跳过。</p>
-<h3 id="pip安装"><a href="#pip安装" class="headerlink" title="pip安装"></a>pip安装</h3><h4 id="pip下载"><a href="#pip下载" class="headerlink" title="pip下载"></a>pip下载</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">wget &quot;https://pypi.python.org/packages/source/p/pip/pip-1.5.4.tar.gz#md5=834b2904f92d46aaa333267fb1c922bb&quot; --no-check-certificate</div></pre></td></tr></table></figure>
+<h3 id="pip安装"><a href="#pip安装" class="headerlink" title="pip安装"></a>pip安装</h3><h4 id="pip下载"><a href="#pip下载" class="headerlink" title="pip下载"></a>pip下载</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">wget "https://pypi.python.org/packages/source/p/pip/pip-1.5.4.tar.gz#md5=834b2904f92d46aaa333267fb1c922bb" --no-check-certificate</div></pre></td></tr></table></figure>
 <p>####pip安装</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">tar -xzvf pip-1.5.4.tar.gz</div><div class="line">cd pip-1.5.4</div><div class="line">python setup.py install  //如果报错,可以在前面加上sudo</div></pre></td></tr></table></figure>
-<h3 id="pip使用详解"><a href="#pip使用详解" class="headerlink" title="pip使用详解"></a>pip使用详解</h3><p>####pip安装软件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">pip install SomePackage</div><div class="line">  [...]</div><div class="line">  Successfully installed SomePackage</div></pre></td></tr></table></figure></p>
-<p>####pip查看已安装的软件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">pip show --files SomePackage</div><div class="line"> Name: SomePackage</div><div class="line"> Version: 1.0</div><div class="line"> Location: /my/env/lib/pythonx.x/site-packages</div><div class="line"> Files:</div><div class="line">  ../somepackage/__init__.py</div><div class="line">  [...]</div></pre></td></tr></table></figure></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">tar -xzvf pip-1.5.4.tar.gz</div><div class="line">cd pip-1.5.4</div><div class="line">python setup.py install  //如果报错,可以在前面加上sudo</div></pre></td></tr></table></figure>
+<h3 id="pip使用详解"><a href="#pip使用详解" class="headerlink" title="pip使用详解"></a>pip使用详解</h3><p>####pip安装软件<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">pip install SomePackage</div><div class="line">  [...]</div><div class="line">  Successfully installed SomePackage</div></pre></td></tr></table></figure></p>
+<p>####pip查看已安装的软件<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">pip show --files SomePackage</div><div class="line"> Name: SomePackage</div><div class="line"> Version: 1.0</div><div class="line"> Location: /my/env/lib/pythonx.x/site-packages</div><div class="line"> Files:</div><div class="line">  ../somepackage/__init__.py</div><div class="line">  [...]</div></pre></td></tr></table></figure></p>
 <p>####pip检查哪些软件需要更新</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">pip list --outdated</div><div class="line">  SomePackage (Current: 1.0 Latest: 2.0)</div></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">pip list --outdated</div><div class="line">  SomePackage (Current: 1.0 Latest: 2.0)</div></pre></td></tr></table></figure>
 <p>####pip升级软件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">pip install --upgrade SomePackage</div><div class="line"> [...]</div><div class="line"> Found existing installation: SomePackage 1.0</div><div class="line"> Uninstalling SomePackage:</div><div class="line">   Successfully uninstalled SomePackage</div><div class="line"> Running setup.py install for SomePackage</div><div class="line"> Successfully installed SomePackage</div></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">pip install --upgrade SomePackage</div><div class="line"> [...]</div><div class="line"> Found existing installation: SomePackage 1.0</div><div class="line"> Uninstalling SomePackage:</div><div class="line">   Successfully uninstalled SomePackage</div><div class="line"> Running setup.py install for SomePackage</div><div class="line"> Successfully installed SomePackage</div></pre></td></tr></table></figure>
 <p>####pip卸载软件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">pip uninstall SomePackage</div><div class="line">  Uninstalling SomePackage:</div><div class="line">    /my/env/lib/pythonx.x/site-packages/somepackage</div><div class="line">  Proceed (y/n)? y</div><div class="line">  Successfully uninstalled SomePackage</div></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">pip uninstall SomePackage</div><div class="line">  Uninstalling SomePackage:</div><div class="line">    /my/env/lib/pythonx.x/site-packages/somepackage</div><div class="line">  Proceed (y/n)? y</div><div class="line">  Successfully uninstalled SomePackage</div></pre></td></tr></table></figure>
 <p>##实战</p>
-<h3 id="安装-dex"><a href="#安装-dex" class="headerlink" title="安装 dex"></a>安装 dex</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip install dex</div></pre></td></tr></table></figure>
-<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">dex -f my/mongod/data/path/mongodb.log mongodb://myUser:myPass@myHost:12345/myDb</div></pre></td></tr></table></figure>
+<h3 id="安装-dex"><a href="#安装-dex" class="headerlink" title="安装 dex"></a>安装 dex</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip install dex</div></pre></td></tr></table></figure>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">dex -f my/mongod/data/path/mongodb.log mongodb://myUser:myPass@myHost:12345/myDb</div></pre></td></tr></table></figure>
 <p>最后会显示如下的结果,帮助我们分析数据库索引,给我们相应的建议:</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    <span class="string">'runStats'</span>: &#123;</div><div class="line">        <span class="string">'linesRecommended'</span>: <span class="number">1549</span>,</div><div class="line">        <span class="string">'linesProcessed'</span>: <span class="number">2406</span>,</div><div class="line">        <span class="string">'linesPassed'</span>: <span class="number">558703</span></div><div class="line">    &#125;,</div><div class="line">    <span class="string">'results'</span>: [</div><div class="line">        &#123;</div><div class="line">            <span class="string">'queryMask'</span>: <span class="string">'&#123;"$query":&#123;"_id":"&lt;val&gt;","deviceType":"&lt;val&gt;","dpr":"&lt;val&gt;","frequency":"&lt;val&gt;","screen":"&lt;val&gt;","ua":"&lt;val&gt;"&#125;&#125;'</span>,</div><div class="line">            <span class="string">'namespace'</span>: <span class="string">'analytics.devices'</span>,</div><div class="line">            <span class="string">'recommendation'</span>: &#123;</div><div class="line">                <span class="string">'index'</span>: <span class="string">'&#123;"_id": 1, "ua": 1, "screen": 1, "dpr": 1, "deviceType": 1, "frequency": 1&#125;'</span>,</div><div class="line">                <span class="string">'namespace'</span>: <span class="string">'analytics.devices'</span>,</div><div class="line">                <span class="string">'shellCommand'</span>: <span class="string">'db["devices"].ensureIndex(&#123;"_id": 1, "ua": 1, "screen": 1, "dpr": 1, "deviceType": 1, "frequency": 1&#125;, &#123;"background": true&#125;)'</span></div><div class="line">            &#125;,</div><div class="line">            <span class="string">'details'</span>: &#123;</div><div class="line">                <span class="string">'count'</span>: <span class="number">860</span>,</div><div class="line">                <span class="string">'totalTimeMillis'</span>: <span class="number">185086</span>,</div><div class="line">                <span class="string">'avgTimeMillis'</span>: <span class="number">215</span></div><div class="line">            &#125;</div><div class="line">        &#125;,</div><div class="line">      ...</div></pre></td></tr></table></figure>
 </span>
@@ -378,14 +374,14 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-count">17</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
 
           <div class="site-state-item site-state-categories">
             <a href="/categories">
-              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-count">7</span>
               <span class="site-state-item-name">分类</span>
               </a>
           </div>

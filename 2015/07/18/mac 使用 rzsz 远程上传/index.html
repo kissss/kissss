@@ -37,34 +37,18 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.4" />
 
 
-<meta name="description" content="##mac 使用 rzsz 远程上传
-
-使用brew 安装
-1brew install lrzsz
-
-安装js
-12cd /usr/local/binwget https://raw.github.com/mmastrac/iterm2-zmodem/master/iterm2-send-zmodem.sh &amp;amp;&amp;amp; https://raw.github.com/mmastrac/it">
+<meta name="description" content="##mac 使用 rzsz 远程上传  使用brew 安装 1brew install lrzsz  安装js 12cd /usr/local/binwget https://raw.github.com/mmastrac/iterm2-zmodem/master/iterm2-send-zmodem.sh &amp;amp;&amp;amp; https://raw.github.com/mmastrac/it">
+<meta name="keywords" content="mac">
 <meta property="og:type" content="article">
 <meta property="og:title" content="mac 使用 rzsz 远程上传">
 <meta property="og:url" content="http://kissss.com/2015/07/18/mac 使用 rzsz 远程上传/index.html">
 <meta property="og:site_name" content="kissss">
-<meta property="og:description" content="##mac 使用 rzsz 远程上传
-
-使用brew 安装
-1brew install lrzsz
-
-安装js
-12cd /usr/local/binwget https://raw.github.com/mmastrac/iterm2-zmodem/master/iterm2-send-zmodem.sh &amp;amp;&amp;amp; https://raw.github.com/mmastrac/it">
-<meta property="og:updated_time" content="2015-09-02T02:43:34.000Z">
+<meta property="og:description" content="##mac 使用 rzsz 远程上传  使用brew 安装 1brew install lrzsz  安装js 12cd /usr/local/binwget https://raw.github.com/mmastrac/iterm2-zmodem/master/iterm2-send-zmodem.sh &amp;amp;&amp;amp; https://raw.github.com/mmastrac/it">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-03-05T04:31:52.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="mac 使用 rzsz 远程上传">
-<meta name="twitter:description" content="##mac 使用 rzsz 远程上传
-
-使用brew 安装
-1brew install lrzsz
-
-安装js
-12cd /usr/local/binwget https://raw.github.com/mmastrac/iterm2-zmodem/master/iterm2-send-zmodem.sh &amp;amp;&amp;amp; https://raw.github.com/mmastrac/it">
+<meta name="twitter:description" content="##mac 使用 rzsz 远程上传  使用brew 安装 1brew install lrzsz  安装js 12cd /usr/local/binwget https://raw.github.com/mmastrac/iterm2-zmodem/master/iterm2-send-zmodem.sh &amp;amp;&amp;amp; https://raw.github.com/mmastrac/it">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -239,11 +223,11 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">brew install lrzsz</div></pre></td></tr></table></figure>
 </li>
 <li><p><strong>安装js</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd /usr/local/bin</div><div class="line">wget https://raw.github.com/mmastrac/iterm2-zmodem/master/iterm2-send-zmodem.sh &amp;&amp; https://raw.github.com/mmastrac/iterm2-zmodem/master/iterm2-recv-zmodem.sh</div></pre></td></tr></table></figure>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">chmod 777 /usr/local/bin/iterm2-*</div></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd /usr/local/bin</div><div class="line">wget https://raw.github.com/mmastrac/iterm2-zmodem/master/iterm2-send-zmodem.sh &amp;&amp; https://raw.github.com/mmastrac/iterm2-zmodem/master/iterm2-recv-zmodem.sh</div></pre></td></tr></table></figure>
+  <figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">chmod 777 /usr/local/bin/iterm2-*</div></pre></td></tr></table></figure>
 </li>
 <li><p><strong>添加trigger  <code>Iterm2 → command + , → click profiles → advanced → triggers</code></strong></p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Regular expression: \*\*B0100</div><div class="line">   Action: Run Silent Coprocess</div><div class="line">   Parameters: /usr/local/bin/iterm2-send-zmodem.sh</div><div class="line"></div><div class="line">   Regular expression: \*\*B00000000000000</div><div class="line">   Action: Run Silent Coprocess</div><div class="line">   Parameters: /usr/local/bin/iterm2-recv-zmodem.sh</div></pre></td></tr></table></figure>
+  <figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Regular expression: \*\*B0100</div><div class="line">   Action: Run Silent Coprocess</div><div class="line">   Parameters: /usr/local/bin/iterm2-send-zmodem.sh</div><div class="line"></div><div class="line">   Regular expression: \*\*B00000000000000</div><div class="line">   Action: Run Silent Coprocess</div><div class="line">   Parameters: /usr/local/bin/iterm2-recv-zmodem.sh</div></pre></td></tr></table></figure>
 </li>
 </ul>
 </span>
@@ -336,14 +320,14 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-count">17</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
 
           <div class="site-state-item site-state-categories">
             <a href="/categories">
-              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-count">7</span>
               <span class="site-state-item-name">分类</span>
               </a>
           </div>

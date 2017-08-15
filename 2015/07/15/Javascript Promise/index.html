@@ -37,19 +37,18 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.4" />
 
 
-<meta name="description" content="一直以来，JavaScript处理异步都是以callback的方式，在前端开发领域callback机制几乎深入人心。在设计API的时候，不管是浏览器厂商还是SDK开发商亦或是各种类库的作者，基本上都已经遵循着callback的套路。
-近几年随着JavaScript开发模式的逐渐成熟，CommonJS规范顺势而生，其中就包括提出了Promise规范，Promise完全改变了js异步编程的写法，让异步">
+<meta name="description" content="一直以来，JavaScript处理异步都是以callback的方式，在前端开发领域callback机制几乎深入人心。在设计API的时候，不管是浏览器厂商还是SDK开发商亦或是各种类库的作者，基本上都已经遵循着callback的套路。 近几年随着JavaScript开发模式的逐渐成熟，CommonJS规范顺势而生，其中就包括提出了Promise规范，Promise完全改变了js异步编程的写法，让异步">
+<meta name="keywords" content="javascript">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JavaScript Promise">
 <meta property="og:url" content="http://kissss.com/2015/07/15/Javascript Promise/index.html">
 <meta property="og:site_name" content="kissss">
-<meta property="og:description" content="一直以来，JavaScript处理异步都是以callback的方式，在前端开发领域callback机制几乎深入人心。在设计API的时候，不管是浏览器厂商还是SDK开发商亦或是各种类库的作者，基本上都已经遵循着callback的套路。
-近几年随着JavaScript开发模式的逐渐成熟，CommonJS规范顺势而生，其中就包括提出了Promise规范，Promise完全改变了js异步编程的写法，让异步">
-<meta property="og:updated_time" content="2015-07-17T16:37:56.000Z">
+<meta property="og:description" content="一直以来，JavaScript处理异步都是以callback的方式，在前端开发领域callback机制几乎深入人心。在设计API的时候，不管是浏览器厂商还是SDK开发商亦或是各种类库的作者，基本上都已经遵循着callback的套路。 近几年随着JavaScript开发模式的逐渐成熟，CommonJS规范顺势而生，其中就包括提出了Promise规范，Promise完全改变了js异步编程的写法，让异步">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-03-05T04:31:52.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JavaScript Promise">
-<meta name="twitter:description" content="一直以来，JavaScript处理异步都是以callback的方式，在前端开发领域callback机制几乎深入人心。在设计API的时候，不管是浏览器厂商还是SDK开发商亦或是各种类库的作者，基本上都已经遵循着callback的套路。
-近几年随着JavaScript开发模式的逐渐成熟，CommonJS规范顺势而生，其中就包括提出了Promise规范，Promise完全改变了js异步编程的写法，让异步">
+<meta name="twitter:description" content="一直以来，JavaScript处理异步都是以callback的方式，在前端开发领域callback机制几乎深入人心。在设计API的时候，不管是浏览器厂商还是SDK开发商亦或是各种类库的作者，基本上都已经遵循着callback的套路。 近几年随着JavaScript开发模式的逐渐成熟，CommonJS规范顺势而生，其中就包括提出了Promise规范，Promise完全改变了js异步编程的写法，让异步">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -229,7 +228,7 @@
 <p>上面这句话，翻译成代码类似：</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> resB = B();</div><div class="line"><span class="keyword">var</span> runA = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    resB.then(execS1, execS2);</div><div class="line">&#125;;</div><div class="line">runA();</div></pre></td></tr></table></figure>
 <p>只看上面这行代码，好像看不出什么特别之处。但现实情况可能比这个复杂许多，A要完成一件事，可能要依赖不止B一个人的响应，可能需要同时向多个人询问，当收到所有的应答之后再执行下一步的方案。最终翻译成代码可能像这样：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> resB = B();</div><div class="line"><span class="keyword">var</span> resC = C();</div><div class="line">...</div><div class="line"></div><div class="line">var runA = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    reqB</div><div class="line">        .then(resC, execS2)</div><div class="line">        .then(resD, execS3)</div><div class="line">        .then(resE, execS4)</div><div class="line">        ...</div><div class="line">        .then(execS1);</div><div class="line">&#125;;</div><div class="line"></div><div class="line">runA();</div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> resB = B();</div><div class="line"><span class="keyword">var</span> resC = C();</div><div class="line">...</div><div class="line"></div><div class="line"><span class="keyword">var</span> runA = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    reqB</div><div class="line">        .then(resC, execS2)</div><div class="line">        .then(resD, execS3)</div><div class="line">        .then(resE, execS4)</div><div class="line">        ...</div><div class="line">        .then(execS1);</div><div class="line">&#125;;</div><div class="line"></div><div class="line">runA();</div></pre></td></tr></table></figure>
 <p>在这里，当每一个被询问者做出不符合预期的应答时都用了不同的处理机制。事实上，Promise规范没有要求这样做，你甚至可以不做任何的处理（即不传入then的第二个参数）或者统一处理。</p>
 <p>好了，下面我们来认识下<a href="https://promisesaplus.com/" target="_blank" rel="external">Promise/A+规范</a>：</p>
 <ul>
@@ -356,14 +355,14 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-count">17</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
 
           <div class="site-state-item site-state-categories">
             <a href="/categories">
-              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-count">7</span>
               <span class="site-state-item-name">分类</span>
               </a>
           </div>

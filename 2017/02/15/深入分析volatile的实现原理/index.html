@@ -37,24 +37,20 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.4" />
 
 
-<meta name="description" content="深入分析volatile的实现原理通过前面一章我们了解了synchronized是一个重量级的锁，虽然JVM对它做了很多优化，而下面介绍的volatile则是轻量级的synchronized。如果一个变量使用volatile，则它比使用synchronized的成本更加低，因为它不会引起线程上下文的切换和调度。Java语言规范对volatile的定义如下：
-
-Java编程语言允许线程访问共享变量，">
+<meta name="description" content="深入分析volatile的实现原理通过前面一章我们了解了synchronized是一个重量级的锁，虽然JVM对它做了很多优化，而下面介绍的volatile则是轻量级的synchronized。如果一个变量使用volatile，则它比使用synchronized的成本更加低，因为它不会引起线程上下文的切换和调度。Java语言规范对volatile的定义如下：  Java编程语言允许线程访问共享变量，">
+<meta name="keywords" content="java">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入分析volatile的实现原理">
 <meta property="og:url" content="http://kissss.com/2017/02/15/深入分析volatile的实现原理/index.html">
 <meta property="og:site_name" content="kissss">
-<meta property="og:description" content="深入分析volatile的实现原理通过前面一章我们了解了synchronized是一个重量级的锁，虽然JVM对它做了很多优化，而下面介绍的volatile则是轻量级的synchronized。如果一个变量使用volatile，则它比使用synchronized的成本更加低，因为它不会引起线程上下文的切换和调度。Java语言规范对volatile的定义如下：
-
-Java编程语言允许线程访问共享变量，">
+<meta property="og:description" content="深入分析volatile的实现原理通过前面一章我们了解了synchronized是一个重量级的锁，虽然JVM对它做了很多优化，而下面介绍的volatile则是轻量级的synchronized。如果一个变量使用volatile，则它比使用synchronized的成本更加低，因为它不会引起线程上下文的切换和调度。Java语言规范对volatile的定义如下：  Java编程语言允许线程访问共享变量，">
+<meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://kissss.com/img/media/14887984661615/14888018488259.jpg">
 <meta property="og:image" content="http://kissss.com/img/media/14887984661615/14888018598555.jpg">
-<meta property="og:updated_time" content="2017-03-08T03:20:35.000Z">
+<meta property="og:updated_time" content="2017-04-05T13:25:22.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入分析volatile的实现原理">
-<meta name="twitter:description" content="深入分析volatile的实现原理通过前面一章我们了解了synchronized是一个重量级的锁，虽然JVM对它做了很多优化，而下面介绍的volatile则是轻量级的synchronized。如果一个变量使用volatile，则它比使用synchronized的成本更加低，因为它不会引起线程上下文的切换和调度。Java语言规范对volatile的定义如下：
-
-Java编程语言允许线程访问共享变量，">
+<meta name="twitter:description" content="深入分析volatile的实现原理通过前面一章我们了解了synchronized是一个重量级的锁，虽然JVM对它做了很多优化，而下面介绍的volatile则是轻量级的synchronized。如果一个变量使用volatile，则它比使用synchronized的成本更加低，因为它不会引起线程上下文的切换和调度。Java语言规范对volatile的定义如下：  Java编程语言允许线程访问共享变量，">
 <meta name="twitter:image" content="http://kissss.com/img/media/14887984661615/14888018488259.jpg">
 
 
@@ -301,13 +297,13 @@ Java编程语言允许线程访问共享变量，">
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/03/03/js十大算法排序/" rel="prev">js十大算法排序</a>
+              <a href="/2017/02/15/Node.js异步/" rel="prev">Node.js异步</a>
             
           </div>
 
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/02/15/Node.js异步/" rel="next">Node.js异步</a>
+              <a href="/2016/12/15/https证书格式/" rel="next">https证书格式</a>
             
           </div>
         </div>
@@ -374,14 +370,14 @@ Java编程语言允许线程访问共享变量，">
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">15</span>
+              <span class="site-state-item-count">17</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
 
           <div class="site-state-item site-state-categories">
             <a href="/categories">
-              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-count">7</span>
               <span class="site-state-item-name">分类</span>
               </a>
           </div>
