@@ -28,7 +28,7 @@
 
 
 
-  <meta name="keywords" content="javascript," />
+  <meta name="keywords" content="java," />
 
 
 
@@ -37,18 +37,21 @@
   <link rel="shorticon icon" type="image/x-icon" href="/favicon.ico?v=0.4.4" />
 
 
-<meta name="description" content="https证书格式 之前没接触过证书加密的话,对证书相关的这些概念真是感觉挺棘手的,因为一下子来了一大堆新名词,看起来像是另一个领域的东西,而不是我们所熟悉的编程领域的那些东西,起码我个人感觉如此,且很长时间都没怎么搞懂.写这篇文章的目的就是为了理理清这些概念,搞清楚它们的含义及关联,还有一些基本操作.  SSLSSL  - Secure Sockets Layer,现在应该叫”TLS”,但由于习">
-<meta name="keywords" content="javascript">
+<meta name="description" content="线程假死排错分析背景在10月8日下午16点10分左右客服在QQ群里反馈说下单无法付款，显示系统繁忙。与支付微服务相关的所有接口都出现了超时无响应的情况。 登录到相关的服务器上面查看，发现进程假死不响应任何请求。当时急于恢复服务，直接重启了进程。服务得以恢复，但是没有保存当时现场情况，很不利于后面分析问题。 分析当时分析问题得出的结论猜测是由于日志中间件的bug导致内存泄漏从而引发进程假死。不过从我">
+<meta name="keywords" content="java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="https证书格式">
-<meta property="og:url" content="http://kissss.com/2016/12/15/https证书格式/index.html">
+<meta property="og:title" content="线程假死排错分析">
+<meta property="og:url" content="http://kissss.com/2017/10/18/线程假死排错分析/index.html">
 <meta property="og:site_name" content="kissss">
-<meta property="og:description" content="https证书格式 之前没接触过证书加密的话,对证书相关的这些概念真是感觉挺棘手的,因为一下子来了一大堆新名词,看起来像是另一个领域的东西,而不是我们所熟悉的编程领域的那些东西,起码我个人感觉如此,且很长时间都没怎么搞懂.写这篇文章的目的就是为了理理清这些概念,搞清楚它们的含义及关联,还有一些基本操作.  SSLSSL  - Secure Sockets Layer,现在应该叫”TLS”,但由于习">
+<meta property="og:description" content="线程假死排错分析背景在10月8日下午16点10分左右客服在QQ群里反馈说下单无法付款，显示系统繁忙。与支付微服务相关的所有接口都出现了超时无响应的情况。 登录到相关的服务器上面查看，发现进程假死不响应任何请求。当时急于恢复服务，直接重启了进程。服务得以恢复，但是没有保存当时现场情况，很不利于后面分析问题。 分析当时分析问题得出的结论猜测是由于日志中间件的bug导致内存泄漏从而引发进程假死。不过从我">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-03-07T14:46:42.000Z">
+<meta property="og:image" content="http://kissss.com/img/media/15077065474013/15077100248564.jpg">
+<meta property="og:image" content="http://kissss.com/img/media/15077065474013/15077105138351.jpg">
+<meta property="og:updated_time" content="2018-01-11T13:47:42.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="https证书格式">
-<meta name="twitter:description" content="https证书格式 之前没接触过证书加密的话,对证书相关的这些概念真是感觉挺棘手的,因为一下子来了一大堆新名词,看起来像是另一个领域的东西,而不是我们所熟悉的编程领域的那些东西,起码我个人感觉如此,且很长时间都没怎么搞懂.写这篇文章的目的就是为了理理清这些概念,搞清楚它们的含义及关联,还有一些基本操作.  SSLSSL  - Secure Sockets Layer,现在应该叫”TLS”,但由于习">
+<meta name="twitter:title" content="线程假死排错分析">
+<meta name="twitter:description" content="线程假死排错分析背景在10月8日下午16点10分左右客服在QQ群里反馈说下单无法付款，显示系统繁忙。与支付微服务相关的所有接口都出现了超时无响应的情况。 登录到相关的服务器上面查看，发现进程假死不响应任何请求。当时急于恢复服务，直接重启了进程。服务得以恢复，但是没有保存当时现场情况，很不利于后面分析问题。 分析当时分析问题得出的结论猜测是由于日志中间件的bug导致内存泄漏从而引发进程假死。不过从我">
+<meta name="twitter:image" content="http://kissss.com/img/media/15077065474013/15077100248564.jpg">
 
 
 <script type="text/javascript" id="hexo.configuration">
@@ -58,7 +61,7 @@
   };
 </script>
 
-    <title> https证书格式 // kissss </title>
+    <title> 线程假死排错分析 // kissss </title>
 </head>
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
 <!--[if lte IE 8]>
@@ -171,7 +174,7 @@
           
           
             
-              https证书格式
+              线程假死排错分析
             
           
         </h1>
@@ -180,8 +183,8 @@
       <div class="post-meta">
         <span class="post-time">
           发表于
-          <time itemprop="dateCreated" datetime="2016-12-15T16:56:24+08:00" content="2016-12-15">
-            2016-12-15
+          <time itemprop="dateCreated" datetime="2017-10-18T16:56:24+08:00" content="2017-10-18">
+            2017-10-18
           </time>
         </span>
 
@@ -189,7 +192,7 @@
           <span class="post-category" >
             &nbsp; | &nbsp; 分类于
             
-              <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a href="/categories/javascript/" itemprop="url" rel="index"><span itemprop="name">javascript</span></a></span>
+              <span itemprop="about" itemscope itemtype="https://schema.org/Thing"><a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a></span>
 
               
               
@@ -210,29 +213,24 @@
       
 
       
-        <span itemprop="articleBody"><h1 id="https证书格式"><a href="#https证书格式" class="headerlink" title="https证书格式"></a>https证书格式</h1><blockquote>
-<p>之前没接触过证书加密的话,对证书相关的这些概念真是感觉挺棘手的,因为一下子来了一大堆新名词,看起来像是另一个领域的东西,而不是我们所熟悉的编程领域的那些东西,起码我个人感觉如此,且很长时间都没怎么搞懂.写这篇文章的目的就是为了理理清这些概念,搞清楚它们的含义及关联,还有一些基本操作.</p>
-</blockquote>
-<h2 id="SSL"><a href="#SSL" class="headerlink" title="SSL"></a>SSL</h2><p><strong>SSL</strong>  - Secure Sockets Layer,现在应该叫”TLS”,但由于习惯问题,我们还是叫”SSL”比较多.http协议默认情况下是不加密内容的,这样就很可能在内容传播的时候被别人监听到,对于安全性要求较高的场合,必须要加密,https就是带加密的http协议,而https的加密是基于SSL的,它执行的是一个比较下层的加密,也就是说,在加密前,你的服务器程序在干嘛,加密后也一样在干嘛,不用动,这个加密对用户和开发者来说都是透明的.More:[维基百科]</p>
-<p><strong>OpenSSL</strong>  - 简单地说,OpenSSL是SSL的一个实现,SSL只是一种规范.理论上来说,SSL这种规范是安全的,目前的技术水平很难破解,但SSL的实现就可能有些漏洞,如著名的”心脏出血”.OpenSSL还提供了一大堆强大的工具软件,强大到90%我们都用不到.</p>
-<h2 id="证书标准"><a href="#证书标准" class="headerlink" title="证书标准"></a>证书标准</h2><p>X.509 - 这是一种证书标准,主要定义了证书中应该包含哪些内容.其详情可以参考RFC5280,SSL使用的就是这种证书标准.</p>
-<h2 id="编码格式"><a href="#编码格式" class="headerlink" title="编码格式"></a>编码格式</h2><p>同样的X.509证书,可能有不同的编码格式,目前有以下两种编码格式.</p>
-<p><strong>PEM</strong> - Privacy Enhanced Mail,打开看文本格式,以”—–BEGIN…”开头, “—–END…”结尾,内容是BASE64编码.<br>查看PEM格式证书的信息:<code>openssl x509 -in certificate.pem -text -noout</code><br>Apache和*NIX服务器偏向于使用这种编码格式.</p>
-<p><strong>DER</strong> - Distinguished Encoding Rules,打开看是二进制格式,不可读.<br>查看DER格式证书的信息:<code>openssl x509 -in certificate.der -inform der -text -noout</code><br>Java和Windows服务器偏向于使用这种编码格式.</p>
-<h2 id="相关的文件扩展名"><a href="#相关的文件扩展名" class="headerlink" title="相关的文件扩展名"></a>相关的文件扩展名</h2><p>这是比较误导人的地方,虽然我们已经知道有PEM和DER这两种编码格式,但文件扩展名并不一定就叫”PEM”或者”DER”,常见的扩展名除了PEM和DER还有以下这些,它们除了编码格式可能不同之外,内容也有差别,但大多数都能相互转换编码格式.</p>
-<p><strong>CRT</strong> - CRT应该是certificate的三个字母,其实还是证书的意思,常见于*NIX系统,有可能是PEM编码,也有可能是DER编码,大多数应该是PEM编码,相信你已经知道怎么辨别.</p>
-<p><strong>CER</strong> - 还是certificate,还是证书,常见于Windows系统,同样的,可能是PEM编码,也可能是DER编码,大多数应该是DER编码.</p>
-<p><strong>KEY</strong> - 通常用来存放一个公钥或者私钥,并非X.509证书,编码同样的,可能是PEM,也可能是DER.<br>查看KEY的办法:<code>openssl rsa -in mykey.key -text -noout</code><br>如果是DER格式的话,同理应该这样了:<code>openssl rsa -in mykey.key -text -noout -inform der</code></p>
-<p><strong>CSR</strong> - Certificate Signing Request,即证书签名请求,这个并不是证书,而是向权威证书颁发机构获得签名证书的申请,其核心内容是一个公钥(当然还附带了一些别的信息),在生成这个申请的时候,同时也会生成一个私钥,私钥要自己保管好.做过iOS APP的朋友都应该知道是怎么向苹果申请开发者证书的吧.<br>查看的办法:<code>openssl req -noout -text -in my.csr</code> (如果是DER格式的话照旧加上-inform der,这里不写了)</p>
-<p><strong>PFX/P12</strong> - predecessor of PKCS#12,对*nix服务器来说,一般CRT和KEY是分开存放在不同文件中的,但Windows的IIS则将它们存在一个PFX文件中,(因此这个文件包含了证书及私钥)这样会不会不安全？应该不会,PFX通常会有一个”提取密码”,你想把里面的东西读取出来的话,它就要求你提供提取密码,PFX使用的时DER编码,如何把PFX转换为PEM编码？<br><code>openssl pkcs12 -in for-iis.pfx -out for-iis.pem -nodes</code><br>这个时候会提示你输入提取代码. for-iis.pem就是可读的文本.<br>生成pfx的命令类似这样:<code>openssl pkcs12 -export -in certificate.crt -inkey privateKey.key -out certificate.pfx -certfile CACert.crt</code></p>
-<p>其中CACert.crt是CA(权威证书颁发机构)的根证书,有的话也通过-certfile参数一起带进去.这么看来,PFX其实是个证书密钥库.</p>
-<p><strong>JKS</strong> - 即Java Key Storage,这是Java的专利,跟OpenSSL关系不大,利用Java的一个叫”keytool”的工具,可以将PFX转为JKS,当然了,keytool也能直接生成JKS,不过在此就不多表了.</p>
-<p>证书编码的转换<br>PEM转为DER <code>openssl x509 -in cert.crt -outform der -out cert.der</code></p>
-<p>DER转为PEM <code>openssl x509 -in cert.crt -inform der -outform pem -out cert.pem</code></p>
-<p>(提示:要转换KEY文件也类似,只不过把x509换成rsa,要转CSR的话,把x509换成req…)</p>
-<p><strong>获得证书</strong><br>向权威证书颁发机构申请证书</p>
-<p>用这命令生成一个csr:<code>openssl req -newkey rsa:2048 -new -nodes -keyout my.key -out my.csr</code><br>把csr交给权威证书颁发机构,权威证书颁发机构对此进行签名,完成.保留好csr,当权威证书颁发机构颁发的证书过期的时候,你还可以用同样的csr来申请新的证书,key保持不变.</p>
-<p>或者生成自签名的证书<br><code>openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pem -out cert.pem</code><br>在生成证书的过程中会要你填一堆的东西,其实真正要填的只有Common Name,通常填写你服务器的域名,如”yourcompany.com”,或者你服务器的IP地址,其它都可以留空的.<br>生产环境中还是不要使用自签的证书,否则浏览器会不认,或者如果你是企业应用的话能够强制让用户的浏览器接受你的自签证书也行.向权威机构要证书通常是要钱的,但现在也有免费的,仅仅需要一个简单的域名验证即可.有兴趣的话查查”沃通数字证书”.</p>
+        <span itemprop="articleBody"><h1 id="线程假死排错分析"><a href="#线程假死排错分析" class="headerlink" title="线程假死排错分析"></a>线程假死排错分析</h1><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在10月8日下午16点10分左右客服在QQ群里反馈说下单无法付款，显示系统繁忙。与支付微服务相关的所有接口都出现了超时无响应的情况。</p>
+<p>登录到相关的服务器上面查看，发现进程假死不响应任何请求。当时急于恢复服务，直接重启了进程。服务得以恢复，但是没有保存当时现场情况，很不利于后面分析问题。</p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>当时分析问题得出的结论猜测是由于日志中间件的bug导致内存泄漏从而引发进程假死。<br>不过从我这几天跟踪pay服务以及考虑到目前大部分的java微服务都使用了这个日志中间件，并且比pay服务请求了高很多的服务都没有出现这样的情况，所以就排除了这个可能。</p>
+<p>pay服务运行3天查看了下2台机器gc情况如下</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"> S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT</div><div class="line"> <span class="number">0.00</span>  <span class="number">67.67</span>  <span class="number">95.13</span>  <span class="number">46.83</span>  <span class="number">97.61</span>  <span class="number">95.44</span>    <span class="number">767</span>    <span class="number">5.970</span>     <span class="number">5</span>    <span class="number">0.934</span>    <span class="number">6.903</span></div><div class="line"></div><div class="line">   S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT</div><div class="line"><span class="number">73.75</span>   <span class="number">0.00</span>  <span class="number">10.66</span>  <span class="number">38.06</span>  <span class="number">96.92</span>  <span class="number">95.01</span>   <span class="number">1376</span>    <span class="number">9.532</span>     <span class="number">4</span>    <span class="number">0.666</span>   <span class="number">10.198</span></div></pre></td></tr></table></figure>
+<p>从上面的数据可以看出，gc情况比较良好，一共发生了4次左右的full gc 每次 full gc时间0.2s左右，所以排除了是因为内存泄漏导致的进程假死。</p>
+<p>又觉得可能是线程池被占满。于是乎今天在pay服务做测试，用pay里面写的工具类调用一个长时间不返回的外部URL，情况如下：</p>
+<p><img src="/img/media/15077065474013/15077100248564.jpg" alt=""></p>
+<p>其中红框部分是自己写的一个url，长时间不会返回。用jmeter并发200个线程，jvm效果图如下：</p>
+<p><img src="/img/media/15077065474013/15077105138351.jpg" alt=""></p>
+<p>同时这时请求一个正常api，进程被卡死，没有任何响应，和当时的情况一致，情况得以复现。</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>根据测试以及相关的代码可以结论：<br>当时是由于大量请求第三方资源，可能网络或者第三方服务不稳定导致长时间未返回，并且pay服务也未设置超时时间，导致http线程池被占满（使用的默认线程数量200），无法响应正常请求，从而发生蝴蝶效应整个系统假死。</p>
+<p>后续会用feign改进下当前服务，避免这样的情况再发生。</p>
+<h2 id="心得"><a href="#心得" class="headerlink" title="心得"></a>心得</h2><p>下面是血淋淋的教训得出的心得，大家一块学习</p>
+<ul>
+<li><strong>出现系统级故障首先尽快恢复服务，其次想办法保护现场，比如dump下当时的jvm内存快照。对于后面分析问题有极大的帮助。</strong></li>
+<li><strong>访问外部资源一定要设置超时时间，以免线程池被占满，影响服务。</strong></li>
+</ul>
 </span>
       
     </div>
@@ -241,7 +239,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/javascript/" rel="tag">#javascript</a>
+            <a href="/tags/java/" rel="tag">#java</a>
           
         </div>
       
@@ -250,13 +248,11 @@
         <div class="post-nav">
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/02/15/深入分析volatile的实现原理/" rel="prev">深入分析volatile的实现原理</a>
-            
           </div>
 
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/03/17/深入理解Node.js内存管理和垃圾回收/" rel="next">深入理解Node.js内存管理和垃圾回收</a>
+              <a href="/2017/07/15/单例模式详解/" rel="next">单例模式详解</a>
             
           </div>
         </div>
@@ -361,7 +357,7 @@
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#https证书格式"><span class="nav-number">1.</span> <span class="nav-text">https证书格式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#SSL"><span class="nav-number">1.1.</span> <span class="nav-text">SSL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#证书标准"><span class="nav-number">1.2.</span> <span class="nav-text">证书标准</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编码格式"><span class="nav-number">1.3.</span> <span class="nav-text">编码格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关的文件扩展名"><span class="nav-number">1.4.</span> <span class="nav-text">相关的文件扩展名</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#线程假死排错分析"><span class="nav-number">1.</span> <span class="nav-text">线程假死排错分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分析"><span class="nav-number">1.2.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结论"><span class="nav-number">1.3.</span> <span class="nav-text">结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#心得"><span class="nav-number">1.4.</span> <span class="nav-text">心得</span></a></li></ol></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>
